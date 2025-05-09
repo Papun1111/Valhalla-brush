@@ -40,10 +40,8 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
       }
 
       router.push("/");
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      const message = err.response?.data?.message || err.message || "Authentication failed";
-      alert(message);
     }
   };
 

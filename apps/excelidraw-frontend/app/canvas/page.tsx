@@ -28,8 +28,18 @@ export default function CreateJoinRoom() {
 
       const { roomId } = response.data;
       setRoomId(String(roomId));
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Failed to create room");
+    } catch (err: unknown) {
+      let message = 'Failed to create room';
+    
+      if (axios.isAxiosError(err)) {
+        // err is an AxiosError
+        message = err.response?.data?.message ?? err.message;
+      } else if (err instanceof Error) {
+        // any other JS Error
+        message = err.message;
+      }
+    
+      setError(message);
     } finally {
       setLoading(false);
     }

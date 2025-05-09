@@ -47,7 +47,7 @@ export function Canvas({
         g.destroy();
       };
     }
-  }, [canvasRef]);
+  }, [canvasRef,roomId,socket]);
 
   return (
     <div
