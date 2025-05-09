@@ -3,6 +3,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { HTTP_BACKEND } from "@/config";
 
 export default function FindJoinRoom() {
   const [slug, setSlug] = useState("");
@@ -17,7 +18,7 @@ export default function FindJoinRoom() {
     try {
       // Fetch room by slug
       const response = await axios.get(
-        `http://localhost:8080/room/${encodeURIComponent(slug.trim())}`
+        `${HTTP_BACKEND}/room/${encodeURIComponent(slug.trim())}`
       );
 
       // backend returns { room: { id, slug, adminId, ... } }

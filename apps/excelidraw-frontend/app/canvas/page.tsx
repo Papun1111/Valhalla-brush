@@ -3,6 +3,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { HTTP_BACKEND } from "@/config";
 
 export default function CreateJoinRoom() {
   const [roomName, setRoomName] = useState("");
@@ -21,7 +22,7 @@ export default function CreateJoinRoom() {
       if (!token) throw new Error("Authorization token not found");
 
       const response = await axios.post(
-        "http://localhost:8080/room",
+        `${HTTP_BACKEND}/room`,
         { name: roomName.trim() },
         { headers: { authorization: token } }
       );

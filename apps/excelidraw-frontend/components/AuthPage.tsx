@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-
+import { HTTP_BACKEND } from "@/config";
 interface AuthPageProps {
   isSignin: boolean;
 }
@@ -17,8 +17,8 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const endpoint = isSignin
-      ? "http://localhost:8080/signin"
-      : "http://localhost:8080/signup";
+      ? `${HTTP_BACKEND}/signin`
+      : `${HTTP_BACKEND}/signup`;
     const payload = isSignin
       ? { username, password }
       : { username, name, password };
