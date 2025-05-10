@@ -18,15 +18,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
+          # SSH and run your deployment commands
           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.48.138.13 << 'EOF'
             cd Valhalla-brush/ && git pull origin production
-
-            # install pnpm & pm2 so the next commands exist
-            sudo npm install -g pnpm pm2
-
             pnpm install
             pnpm run build
-
             pm2 restart http-backend
             pm2 restart ws-backend
             pm2 restart excelidraw-frontend
