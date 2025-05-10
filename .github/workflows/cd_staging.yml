@@ -1,0 +1,28 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  redeploy_everything:
+    name: Deploying everything to staging cluster
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH Into server
+        run: |
+          # write out the SSH key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ssh_key
+          chmod 600 ssh_key
+
+          # connect and run all commands in one SSH session
+          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.71.245 << 'EOF'
+            cd Valhalla-brush/ && git pull
+            pnpm install
+            pnpm run build
+            pm2 restart http-backend
+            pm2 restart ws-backend
+            pm2 restart excelidraw-frontend
+          EOF
