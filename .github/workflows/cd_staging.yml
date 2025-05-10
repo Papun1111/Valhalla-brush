@@ -11,17 +11,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH Into server
-        run: |
-          # write out the SSH key
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ssh_key
-          chmod 600 ssh_key
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-          # connect and run all commands in one SSH session
-          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.71.245 << 'EOF'
-            cd Valhalla-brush/ && git pull
+      - name: Load SSH key
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: SSH Into server & deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@51.20.71.245 << 'EOF'
+            # make sure your shell profile (NVM, global bin dirs) is loaded
+            source ~/.bashrc || source ~/.profile || true
+
+            # install pnpm if missing
+            if ! command -v pnpm >/dev/null; then
+              npm install -g pnpm
+            fi
+
+            # install pm2 if missing
+            if ! command -v pm2 >/dev/null; then
+              npm install -g pm2
+            fi
+
+            cd Valhalla-brush/
             pnpm install
             pnpm run build
+
             pm2 restart http-backend
             pm2 restart ws-backend
             pm2 restart excelidraw-frontend
