@@ -1,30 +1,38 @@
 "use client";
 
-import { ReactNode, ButtonHTMLAttributes } from "react";
+import React, {
+  PropsWithChildren,
+  ButtonHTMLAttributes,
+} from "react";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "lg" | "sm";
-  children: ReactNode;
+type Variant = "primary" | "secondary" | "outline" | "ghost";
+type Size    = "lg" | "sm";
+
+export interface ButtonOwnProps {
+  variant?: Variant;
+  size?:    Size;
   className?: string;
 }
 
-export const Button = ({
-  variant = "primary",
-  size = "lg",
+export type ButtonProps =
+  ButtonOwnProps &
+  ButtonHTMLAttributes<HTMLButtonElement>;
+
+export function Button({
+  variant   = "primary",
+  size      = "lg",
   className = "",
   children,
   ...props
-}: ButtonProps) => {
-  // Base styling for button container
+}: PropsWithChildren<ButtonProps>): JSX.Element {
   const baseClasses =
     "relative inline-flex items-center justify-center overflow-hidden font-medium rounded-2xl focus:outline-none";
 
-  // Size variants
-  const sizeClasses = size === "lg" ? "h-12 px-8 text-lg" : "h-8 px-4 text-sm";
+  const sizeClasses = size === "lg"
+    ? "h-12 px-8 text-lg"
+    : "h-8 px-4 text-sm";
 
-  // Color and hover fill variants
-  const variantClasses: Record<string, string> = {
+  const variantClasses: Record<Variant,string> = {
     primary:
       "bg-indigo-600 text-white hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500",
     secondary:
@@ -38,14 +46,17 @@ export const Button = ({
   return (
     <button
       {...props}
-      className={
-        `${baseClasses} ${sizeClasses} ${variantClasses[variant]} ${className} ` +
-        "transition-colors duration-300 ease-in-out transform hover:scale-105"
-      }
+      className={`
+        ${baseClasses}
+        ${sizeClasses}
+        ${variantClasses[variant]}
+        ${className}
+        transition-colors duration-300 ease-in-out transform hover:scale-105
+      `}
     >
       <span className="flex items-center gap-2">
         {children}
       </span>
     </button>
   );
-};
+}

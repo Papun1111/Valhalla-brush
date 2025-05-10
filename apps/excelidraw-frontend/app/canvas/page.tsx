@@ -3,6 +3,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { HTTP_BACKEND } from "@/config";
 
 export default function CreateJoinRoom() {
   const [roomName, setRoomName] = useState("");
@@ -21,15 +22,25 @@ export default function CreateJoinRoom() {
       if (!token) throw new Error("Authorization token not found");
 
       const response = await axios.post(
-        "http://localhost:8080/room",
+        `${HTTP_BACKEND}/room`,
         { name: roomName.trim() },
         { headers: { authorization: token } }
       );
 
       const { roomId } = response.data;
       setRoomId(String(roomId));
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Failed to create room");
+    } catch (err: unknown) {
+      let message = 'Failed to create room';
+    
+      if (axios.isAxiosError(err)) {
+        // err is an AxiosError
+        message = err.response?.data?.message ?? err.message;
+      } else if (err instanceof Error) {
+        // any other JS Error
+        message = err.message;
+      }
+    
+      setError(message);
     } finally {
       setLoading(false);
     }
