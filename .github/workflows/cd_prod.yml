@@ -14,25 +14,21 @@ jobs:
     steps:
       - name: SSH into server and deploy
         run: |
-          # write the private key and secure it
+          # write out the private key and secure it
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
-          # SSH and run your deployment commands
-          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.48.138.13 << 'EOF'
-            cd Valhalla-brush/
-
-            # ensure we're on production
-            git fetch origin
-            git checkout production
-
-            # pull down the latest production
-            git pull origin production
-
-            pnpm install
-            pnpm run build
-
-            pm2 restart http-backend
-            pm2 restart ws-backend
-            pm2 restart excelidraw-frontend
-          EOF
+          # SSH and run your one-liner deploy logic
+          ssh -o StrictHostKeyChecking=no \
+              -i ssh_key \
+              ubuntu@13.48.138.13 -t "\
+            cd Valhalla-brush/ && \
+            git pull origin production && \
+            export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && \
+            npm install -g pnpm && \
+            pnpm install && \
+            pnpm run build && \
+            pm2 restart http-backend && \
+            pm2 restart ws-backend && \
+            pm2 restart excelidraw-frontend\
+          "
