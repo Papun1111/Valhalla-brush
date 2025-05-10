@@ -1,45 +1,19 @@
-name: Deploy to staging
-
-on:
+ name:Deploy to staging
+ on:
   push:
     branches:
-      - main
-
+      -"main"
 jobs:
   redeploy_everything:
-    name: Deploying everything to staging cluster
-    runs-on: ubuntu-latest
-
+    name:Deploying everything to staging cluster
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Load SSH key
-        uses: webfactory/ssh-agent@v0.8.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: SSH Into server & deploy
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@51.20.71.245 << 'EOF'
-            # make sure your shell profile (NVM, global bin dirs) is loaded
-            source ~/.bashrc || source ~/.profile || true
-
-            # install pnpm if missing
-            if ! command -v pnpm >/dev/null; then
-              npm install -g pnpm
-            fi
-
-            # install pm2 if missing
-            if ! command -v pm2 >/dev/null; then
-              npm install -g pm2
-            fi
-
-            cd Valhalla-brush/
-            pnpm install
-            pnpm run build
-
-            pm2 restart http-backend
-            pm2 restart ws-backend
-            pm2 restart excelidraw-frontend
-          EOF
+      - name:SSH Into server
+      -run:|
+          echo ${{ secrets.SSH_PRIVATE_KEY }} &>ssh_key
+          ssh -i ~/ssh_key papun.pem ubuntu@51.20.71.245
+          cd Valhalla-brush/ && git pull 
+          pnpm install
+          pnpm run build
+          pm2 restart http-backend
+          pm2 restart ws-backend
+          pm2 restart excelidraw-frontend
