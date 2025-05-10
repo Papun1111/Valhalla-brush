@@ -1,29 +1,36 @@
-# .github/workflows/deploy-to-staging.yml
-name: Deploy to staging
 
-on:
-  push:
-    branches:
-      - main
+ name: Deploy to staging
 
-jobs:
-  redeploy_everything:
-    name: Deploying everything to staging cluster
-    runs-on: ubuntu-latest
+ on:
+   push:
+     branches:
+       - production
 
-    steps:
-      - name: SSH into server and deploy
-        run: |
-          # write the private key to a file and secure it
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
-          chmod 600 ssh_key
+ jobs:
+   redeploy_everything:
+     name: Deploying everything to staging cluster
+     runs-on: ubuntu-latest
 
-          # SSH and run your deployment commands
-          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.71.245 << 'EOF'
-            cd Valhalla-brush/ && git pull
-            pnpm install
-            pnpm run build
-            pm2 restart http-backend
-            pm2 restart ws-backend
-            pm2 restart excelidraw-frontend
-          EOF
+     steps:
+       - name: SSH into server and deploy
+         run: |
+           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
+           chmod 600 ssh_key
+
+           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.48.138.13 << 'EOF'
+-            cd Valhalla-brush/ && git pull origin production
++            cd Valhalla-brush/
++            # ensure Git will perform a merge (default) rather than erroring
++            git config pull.rebase false
++            git pull origin production
+
+             # install pnpm & pm2 so the commands exist
+             sudo npm install -g pnpm pm2
+
+             pnpm install
+             pnpm run build
+
+             pm2 restart http-backend
+             pm2 restart ws-backend
+             pm2 restart excelidraw-frontend
+           EOF
