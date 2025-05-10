@@ -20,7 +20,7 @@ jobs:
 
           # SSH and run your deployment commands
           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.48.138.13 << 'EOF'
-            cd Valhalla-brush/ && git pull origin production
+            cd Valhalla-brush/ && git pull 
             pnpm install
             pnpm run build
             pm2 restart http-backend
