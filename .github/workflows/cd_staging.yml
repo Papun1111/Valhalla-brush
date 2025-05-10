@@ -18,8 +18,14 @@ jobs:
           chmod 600 ssh_key
 
           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.71.245 << 'EOF'
-            # ensure pnpm and pm2 are available
-            npm install -g pnpm pm2
+            # Install Node.js & npm if missing
+            if ! command -v npm >/dev/null; then
+              sudo apt-get update
+              sudo apt-get install -y nodejs npm
+            fi
+
+            # Install pnpm & pm2 globally
+            sudo npm install -g pnpm pm2
 
             cd Valhalla-brush
             git pull
