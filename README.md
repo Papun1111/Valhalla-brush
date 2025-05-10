@@ -1,62 +1,68 @@
-````markdown
 # Valhalla Brush
 
-![Next.js](https://img.shields.io/badge/Next.js-%23000000.svg?style=for-the-badge&logo=nextdotjs&logoColor=white)  
-![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)  
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)  
-![Prisma](https://img.shields.io/badge/Prisma-%234365A6.svg?style=for-the-badge&logo=prisma&logoColor=white)  
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23336791.svg?style=for-the-badge&logo=postgresql&logoColor=white)  
-![Turborepo](https://img.shields.io/badge/Turborepo-%234F43E6.svg?style=for-the-badge&logo=turborepo&logoColor=white)  
-![Nginx](https://img.shields.io/badge/Nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)  
-![DevOps](https://img.shields.io/badge/DevOps-%23F05032.svg?style=for-the-badge&logo=azuredevops&logoColor=white)  
+![Next.js](https://img.shields.io/badge/Next.js-%23000000.svg?style=for-the-badge\&logo=nextdotjs\&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=for-the-badge\&logo=typescript\&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=for-the-badge\&logo=tailwind-css\&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-%234365A6.svg?style=for-the-badge\&logo=prisma\&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23336791.svg?style=for-the-badge\&logo=postgresql\&logoColor=white)
+![Turborepo](https://img.shields.io/badge/Turborepo-%234F43E6.svg?style=for-the-badge\&logo=turborepo\&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-%23009639.svg?style=for-the-badge\&logo=nginx\&logoColor=white)
+![DevOps](https://img.shields.io/badge/DevOps-%23F05032.svg?style=for-the-badge\&logo=azuredevops\&logoColor=white)
 
 ---
 
 ## 🚀 Overview
 
 **Valhalla Brush** is a real-time, multiplayer canvas application where users can:
-- 🔗 Create or join drawing **rooms**
-- ✍️ Collaboratively sketch, write, and visualise ideas
-- 🔄 Share live canvas updates with all participants
 
-This is an early-stage project and more features (e.g. user authentication, advanced tools, session recording) will be added soon.
+* 🔗 Create or join drawing **rooms**
+* ✍️ Collaboratively sketch, write, and visualize ideas
+* 🔄 Share live canvas updates with all participants
+
+This is an early-stage project; many features (e.g., authentication, advanced tools, session recording) will be added soon.
 
 ---
 
 ## ✨ Features
 
-- **Room Management**  
-  - Create new canvas rooms  
-  - Join existing rooms via unique URLs  
-- **Live Collaboration**  
-  - Real-time drawing and writing sync  
-  - Multi-user cursors and colour indicators  
-- **Share & Persist**  
-  - Share room links instantly  
-  - Canvas state persisted in PostgreSQL  
+* **Room Management**
+
+  * Create new canvas rooms
+  * Join existing rooms via unique URLs
+
+* **Live Collaboration**
+
+  * Real-time drawing and writing sync
+  * Multi-user cursors and color indicators
+
+* **Share & Persist**
+
+  * Share room links instantly
+  * Canvas state persisted in PostgreSQL
 
 ---
 
 ## 🛠 Tech Stack
 
-| Layer                  | Technology            |
-| ---------------------- | --------------------- |
-| **Frontend**           | Next.js, TypeScript   |
-| **Styling**            | Tailwind CSS          |
-| **Backend**            | Next.js API routes    |
-| **Database & ORM**     | PostgreSQL, Prisma    |
-| **Monorepo**           | Turborepo             |
-| **Deployment & DevOps**| Nginx (reverse proxy), Docker, CI/CD pipelines |
+| Layer                   | Technology                                     |
+| ----------------------- | ---------------------------------------------- |
+| **Frontend**            | Next.js, TypeScript                            |
+| **Styling**             | Tailwind CSS                                   |
+| **Backend**             | Next.js API routes                             |
+| **Database & ORM**      | PostgreSQL, Prisma                             |
+| **Monorepo**            | Turborepo                                      |
+| **Deployment & DevOps** | Nginx (reverse proxy), Docker, CI/CD pipelines |
 
 ---
 
 ## 📦 Installation & Setup
 
-1. **Clone the Repo**  
+1. **Clone the Repo**
+
    ```bash
    git clone https://github.com/your-org/valhalla-brush.git
    cd valhalla-brush
-````
+   ```
 
 2. **Install Dependencies**
 
@@ -65,7 +71,7 @@ This is an early-stage project and more features (e.g. user authentication, adva
    ```
 
 3. **Environment Variables**
-   Create a `.env` file in the root with:
+   Create a `.env` file in the root:
 
    ```env
    DATABASE_URL="postgresql://user:password@localhost:5432/valhalla"
@@ -82,8 +88,9 @@ This is an early-stage project and more features (e.g. user authentication, adva
 
    ```bash
    npm run dev
-   open http://localhost:3000
    ```
+
+   Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -125,8 +132,7 @@ This is an early-stage project and more features (e.g. user authentication, adva
 
 4. **CI/CD**
 
-   * Configure pipeline to build Docker image
-   * Push to registry
+   * Build & push Docker image
    * Deploy to your Kubernetes/VM cluster
    * Automate DB migrations
 
@@ -156,7 +162,4 @@ Please follow the [Code of Conduct](./CODE_OF_CONDUCT.md) and ensure all tests p
 
 ## 📜 License
 
-Distributed under the MIT License. See [LICENSE](./LICENSE) for more information.
-
-```
-```
+Distributed under the MIT License. See [LICENSE](./LICENSE) for details.
