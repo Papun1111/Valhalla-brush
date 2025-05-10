@@ -19,7 +19,7 @@ jobs:
 
           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.71.245 << 'EOF'
             # ensure pnpm and pm2 are available
-            sudo npm install -g pnpm pm2
+            npm install -g pnpm pm2
 
             cd Valhalla-brush
             git pull
