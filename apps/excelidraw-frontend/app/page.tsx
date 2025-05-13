@@ -1,9 +1,25 @@
+"use client"
 import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";
 import Link from "next/link";
-import { FiEdit2, FiShare2, FiUsers, FiStar, FiGithub, FiDownload } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { FiEdit2, FiShare2, FiUsers, FiStar, FiGithub, FiDownload, FiLogOut } from "react-icons/fi";
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  useEffect(() => {
+    // Check if user is logged in on component mount
+    const token = localStorage.getItem("authorization");
+    setIsLoggedIn(!!token);
+  }, []);
+  
+  const handleLogout = () => {
+    // Remove authorization from localStorage
+    localStorage.removeItem("authorization");
+    setIsLoggedIn(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
       {/* Hero Section */}
@@ -19,24 +35,41 @@ export default function App() {
             Create, collaborate, and share beautiful diagrams and sketches with our intuitive drawing tool. No sign-up required.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link href="/signin">
+            {isLoggedIn ? (
               <Button
+                onClick={handleLogout}
                 variant="ghost"
                 size="lg"
-                className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl transform hover:scale-105 transition">
-                Sign in
-                <FiEdit2 className="ml-2 h-5 w-5" />
+                className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl transform hover:scale-105 transition"
+              >
+                Logout
+                <FiLogOut className="ml-2 h-5 w-5" />
               </Button>
-            </Link>
-            <Link href="/signup">
-              <Button
-                variant="outline"
-                size="lg"
-                className="h-12 px-8 border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white transition">
-                Sign up
-              </Button>
-            </Link>
+            ) : (
+              <>
+                <Link href="/signin">
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl transform hover:scale-105 transition">
+                    Sign in
+                    <FiEdit2 className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="h-12 px-8 border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white transition">
+                    Sign up
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
+          {isLoggedIn && (
+            <p className="mt-4">You are logged in</p>
+          )}
         </div>
       </header>
 
@@ -97,25 +130,31 @@ export default function App() {
                 Join thousands of users who are already creating amazing diagrams and sketches.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
-                <Link href="/canvas">
-                  <Button
-                    size="lg"
-                    variant="ghost"
-                    className="h-12 px-8 bg-gray-800 text-white border border-gray-700 hover:bg-gray-700 transform hover:scale-105 transition"
-                  >
-                    Open Canvas
-                    <FiEdit2 className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="/slug">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="h-12 px-8 border-white text-white hover:bg-white hover:text-gray-900 transition"
-                  >
-                    Join Room
-                  </Button>
-                </Link>
+                {isLoggedIn ? (
+                  <>
+                    <Link href="/canvas">
+                      <Button
+                        size="lg"
+                        variant="ghost"
+                        className="h-12 px-8 bg-gray-800 text-white border border-gray-700 hover:bg-gray-700 transform hover:scale-105 transition"
+                      >
+                        Open Canvas
+                        <FiEdit2 className="ml-2 h-5 w-5" />
+                      </Button>
+                    </Link>
+                    <Link href="/slug">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="h-12 px-8 border-white text-white hover:bg-white hover:text-gray-900 transition"
+                      >
+                        Join Room
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <p>Please log in to access canvas and join room</p>
+                )}
               </div>
             </div>
           </div>
