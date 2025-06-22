@@ -19,7 +19,7 @@ jobs:
           chmod 600 ssh_key
 
           # SSH and run your deployment commands
-          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.71.245 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.21.250.79 << 'EOF'
             cd Valhalla-brush/ && git pull
             pnpm install
             pnpm run build
