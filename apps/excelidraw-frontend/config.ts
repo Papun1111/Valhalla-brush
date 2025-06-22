@@ -1,3 +1,3 @@
 
-export const HTTP_BACKEND = "https://http-server.valhalla-brush.com"
-export const WS_URL = "https://ws-server.valhalla-brush.com";
+export const HTTP_BACKEND = "http://localhost:8000"
+export const WS_URL = "ws://localhost:8080"
