@@ -18,22 +18,36 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
-          # SSH and run your deployment commands
           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.142.155 << 'EOF'
             cd Valhalla-brush/
-
-            # Pull latest changes
             git pull
 
-            # Ensure Node.js, pnpm, and pm2 are available
-            npm install -g pnpm
-            pnpm add -g pm2
+            # --- INSTALL NODE/NPM IF MISSING ---
+            if ! command -v node >/dev/null 2>&1; then
+              echo "Installing Node.js & npm…"
+              sudo apt-get update -y
+              sudo apt-get install -y curl
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            fi
 
-            # Install and build
+            # --- INSTALL PNPM IF MISSING ---
+            if ! command -v pnpm >/dev/null 2>&1; then
+              echo "Installing pnpm…"
+              npm install -g pnpm
+            fi
+
+            # --- INSTALL PM2 IF MISSING ---
+            if ! command -v pm2 >/dev/null 2>&1; then
+              echo "Installing pm2…"
+              pnpm add -g pm2
+            fi
+
+            # --- INSTALL DEPENDENCIES & BUILD ---
             pnpm install
             pnpm run build
 
-            # Restart all services
+            # --- RESTART SERVICES ---
             pm2 restart http-backend
             pm2 restart ws-backend
             pm2 restart excalidraw-frontend
