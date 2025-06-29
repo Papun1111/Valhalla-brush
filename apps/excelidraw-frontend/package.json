@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
+    "animejs": "^4.0.2",
     "axios": "^1.7.9",
     "lucide-react": "^0.473.0",
-    "motion": "^12.18.1",
     "next": "15.1.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
