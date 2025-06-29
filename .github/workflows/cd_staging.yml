@@ -14,41 +14,15 @@ jobs:
     steps:
       - name: SSH into server and deploy
         run: |
+          # write the private key to a file and secure it
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
+          # SSH and run your deployment commands
           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.142.155 << 'EOF'
-            set -e
-
-            cd Valhalla-brush/
-            git pull
-
-            # --- INSTALL NODE.js LTS (if missing) ---
-            if ! command -v node >/dev/null 2>&1; then
-              echo "Installing Node.js LTS…"
-              sudo apt-get update -y
-              sudo apt-get install -y curl
-              curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-              sudo apt-get install -y nodejs
-            fi
-
-            # --- INSTALL PNPM (if missing) ---
-            if ! command -v pnpm >/dev/null 2>&1; then
-              echo "Installing pnpm…"
-              sudo npm install -g pnpm
-            fi
-
-            # --- INSTALL PM2 (if missing) ---
-            if ! command -v pm2 >/dev/null 2>&1; then
-              echo "Installing pm2…"
-              sudo npm install -g pm2
-            fi
-
-            # --- INSTALL DEPENDENCIES & BUILD ---
+            cd Valhalla-brush/ && git pull
             pnpm install
             pnpm run build
-
-            # --- RESTART SERVICES ---
             pm2 restart http-backend
             pm2 restart ws-backend
             pm2 restart excelidraw-frontend
