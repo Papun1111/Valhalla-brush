@@ -25,5 +25,5 @@ jobs:
             pnpm run build
             pm2 restart http-backend
             pm2 restart ws-backend
-            pm2 restart excelidraw-frontend
+            pm2 restart excalidraw-frontend
           EOF
