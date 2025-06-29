@@ -20,10 +20,21 @@ jobs:
 
           # SSH and run your deployment commands
           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.20.142.155 << 'EOF'
-            cd Valhalla-brush/ && git pull
+            cd Valhalla-brush/
+
+            # Pull latest changes
+            git pull
+
+            # Ensure Node.js, pnpm, and pm2 are available
+            npm install -g pnpm
+            pnpm add -g pm2
+
+            # Install and build
             pnpm install
             pnpm run build
+
+            # Restart all services
             pm2 restart http-backend
             pm2 restart ws-backend
-            pm2 restart excelidraw-frontend
+            pm2 restart excalidraw-frontend
           EOF
