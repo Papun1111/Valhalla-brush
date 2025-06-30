@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { toast } from "react-toastify";
+import {toast, Zoom } from "react-toastify";
 import { HTTP_BACKEND } from "@/config";
 interface AuthPageProps {
   isSignin: boolean;
@@ -14,6 +14,7 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const endpoint = isSignin
@@ -37,7 +38,10 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
         // Set axios default for future requests
         axios.defaults.headers.common["Authorization"] = authHeader;
       }
-      toast.success("Authentication succesfully completed");
+      toast.dark("Authentication succesfully completed",{
+        transition:Zoom,
+        delay:200,
+      });
       router.push("/");
     } catch (err) {
       console.error(err);

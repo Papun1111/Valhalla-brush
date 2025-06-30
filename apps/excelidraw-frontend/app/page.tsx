@@ -4,6 +4,7 @@ import { Card } from "@repo/ui/card";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FiEdit2, FiShare2, FiUsers, FiStar, FiGithub, FiDownload, FiLogOut, FiZap, FiLayers, FiClock, FiShield, FiCloud } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,6 +19,7 @@ export default function App() {
     // Remove authorization from localStorage
     localStorage.removeItem("authorization");
     setIsLoggedIn(false);
+    toast.dark("Logout successfull!")
   };
 
   return (
