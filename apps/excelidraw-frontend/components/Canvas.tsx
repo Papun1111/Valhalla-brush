@@ -32,6 +32,8 @@ export function Canvas({
   const [selectedTool, setSelectedTool] = useState<Tool>("circle");
   const [selectedColor, setSelectedColor] = useState<string>(COLORS[0]);
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [strokeSize, setStrokeSize] = useState<number>(2);
+  const [eraserSize, setEraserSize] = useState<number>(20);
 
   useEffect(() => {
     game?.setTool(selectedTool);
@@ -40,6 +42,14 @@ export function Canvas({
   useEffect(() => {
     game?.setColor(selectedColor);
   }, [selectedColor, game]);
+
+  useEffect(() => {
+    game?.setStrokeSize(strokeSize);
+  }, [strokeSize, game]);
+
+  useEffect(() => {
+    game?.setEraserSize(eraserSize);
+  }, [eraserSize, game]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -75,6 +85,11 @@ export function Canvas({
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
           setShowSettings={setShowSettings}
+          strokeSize={strokeSize}
+          setStrokeSize={setStrokeSize}
+          eraserSize={eraserSize}
+          setEraserSize={setEraserSize}
+          selectedTool={selectedTool}
         />
       )}
 
@@ -197,7 +212,7 @@ function Topbar({
                         bg-slate-800 text-white text-xs px-2 py-1 rounded-lg
                         opacity-0 group-hover:opacity-100 transition-opacity duration-200
                         pointer-events-none whitespace-nowrap z-10">
-            Colors
+            Settings
           </div>
         </div>
       </div>
@@ -209,10 +224,20 @@ function ColorPicker({
   selectedColor,
   setSelectedColor,
   setShowSettings,
+  strokeSize,
+  setStrokeSize,
+  eraserSize,
+  setEraserSize,
+  selectedTool,
 }: {
   selectedColor: string;
   setSelectedColor: (color: string) => void;
   setShowSettings: (show: boolean) => void;
+  strokeSize: number;
+  setStrokeSize: (size: number) => void;
+  eraserSize: number;
+  setEraserSize: (size: number) => void;
+  selectedTool: Tool;
 }) {
   const [customColor, setCustomColor] = useState<string>("#000000");
 
@@ -223,7 +248,7 @@ function ColorPicker({
                       animate-in slide-in-from-top-2 duration-300 min-w-[280px]">
         
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-medium text-sm">Color Palette</h3>
+          <h3 className="text-white font-medium text-sm">Settings</h3>
           <button
             onClick={() => setShowSettings(false)}
             className="text-slate-400 hover:text-white transition-colors duration-200
@@ -234,30 +259,29 @@ function ColorPicker({
           </button>
         </div>
 
-        <div className="grid grid-cols-6 gap-2 mb-4">
-          {COLORS.map((color) => (
-            <button
-              key={color}
-              onClick={() => setSelectedColor(color)}
-              className={`w-8 h-8 rounded-lg border-2 transition-all duration-200
-                         hover:scale-110 hover:shadow-lg
-                         ${selectedColor === color 
-                           ? 'border-white shadow-lg scale-110' 
-                           : 'border-slate-600 hover:border-slate-400'}`}
-              style={{ 
-                backgroundColor: color,
-                boxShadow: selectedColor === color 
-                  ? `0 0 12px ${color}60` 
-                  : `0 2px 4px ${color}20`
-              }}
-            />
-          ))}
-        </div>
+        {/* Color Palette */}
+        <div className="mb-4">
+          <h4 className="text-white text-xs font-medium mb-2">Color Palette</h4>
+          <div className="grid grid-cols-6 gap-2 mb-3">
+            {COLORS.map((color) => (
+              <button
+                key={color}
+                onClick={() => setSelectedColor(color)}
+                className={`w-8 h-8 rounded-lg border-2 transition-all duration-200
+                           hover:scale-110 hover:shadow-lg
+                           ${selectedColor === color 
+                             ? 'border-white shadow-lg scale-110' 
+                             : 'border-slate-600 hover:border-slate-400'}`}
+                style={{ 
+                  backgroundColor: color,
+                  boxShadow: selectedColor === color 
+                    ? `0 0 12px ${color}60` 
+                    : `0 2px 4px ${color}20`
+                }}
+              />
+            ))}
+          </div>
 
-        <div className="border-t border-slate-700/50 pt-4">
-          <label className="text-white text-xs font-medium mb-2 block">
-            Custom Color
-          </label>
           <div className="flex items-center gap-2">
             <input
               type="color"
@@ -278,11 +302,102 @@ function ColorPicker({
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-slate-700/50">
+        {/* Stroke Size Controls */}
+        <div className="mb-4 pt-4 border-t border-slate-700/50">
+          <h4 className="text-white text-xs font-medium mb-2">Stroke Size</h4>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setStrokeSize(Math.max(1, strokeSize - 1))}
+              className="w-8 h-8 bg-slate-800 hover:bg-slate-700 
+                        text-white rounded-lg transition-colors duration-200
+                        flex items-center justify-center border border-slate-600
+                        hover:border-slate-500"
+            >
+              -
+            </button>
+            <div className="flex-1 flex items-center gap-2">
+              <input
+                type="range"
+                min="1"
+                max="20"
+                value={strokeSize}
+                onChange={(e) => setStrokeSize(parseInt(e.target.value))}
+                className="flex-1 accent-blue-500"
+              />
+              <span className="text-white text-xs w-8">{strokeSize}px</span>
+            </div>
+            <button
+              onClick={() => setStrokeSize(Math.min(20, strokeSize + 1))}
+              className="w-8 h-8 bg-slate-800 hover:bg-slate-700 
+                        text-white rounded-lg transition-colors duration-200
+                        flex items-center justify-center border border-slate-600
+                        hover:border-slate-500"
+            >
+              +
+            </button>
+          </div>
+          <div className="mt-2 flex justify-center">
+            <div 
+              className="rounded-full bg-white"
+              style={{ width: `${strokeSize}px`, height: `${strokeSize}px` }}
+            />
+          </div>
+        </div>
+
+        {/* Eraser Size Controls */}
+        <div className="mb-4 pt-4 border-t border-slate-700/50">
+          <h4 className="text-white text-xs font-medium mb-2">Eraser Size</h4>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setEraserSize(Math.max(5, eraserSize - 5))}
+              className="w-8 h-8 bg-slate-800 hover:bg-slate-700 
+                        text-white rounded-lg transition-colors duration-200
+                        flex items-center justify-center border border-slate-600
+                        hover:border-slate-500"
+            >
+              -
+            </button>
+            <div className="flex-1 flex items-center gap-2">
+              <input
+                type="range"
+                min="5"
+                max="100"
+                step="5"
+                value={eraserSize}
+                onChange={(e) => setEraserSize(parseInt(e.target.value))}
+                className="flex-1 accent-red-500"
+              />
+              <span className="text-white text-xs w-8">{eraserSize}px</span>
+            </div>
+            <button
+              onClick={() => setEraserSize(Math.min(100, eraserSize + 5))}
+              className="w-8 h-8 bg-slate-800 hover:bg-slate-700 
+                        text-white rounded-lg transition-colors duration-200
+                        flex items-center justify-center border border-slate-600
+                        hover:border-slate-500"
+            >
+              +
+            </button>
+          </div>
+          <div className="mt-2 flex justify-center">
+            <div 
+              className="rounded-full border-2 border-dashed border-red-400"
+              style={{ width: `${eraserSize}px`, height: `${eraserSize}px` }}
+            />
+          </div>
+        </div>
+
+        {/* Current Selection Info */}
+        <div className="pt-4 border-t border-slate-700/50">
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <div className="w-4 h-4 rounded border border-slate-600" 
                  style={{ backgroundColor: selectedColor }} />
-            <span>Selected: {selectedColor}</span>
+            <span>Color: {selectedColor}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
+            <span>Tool: {selectedTool}</span>
+            {selectedTool === 'pencil' && <span>• Stroke: {strokeSize}px</span>}
+            {selectedTool === 'eraser' && <span>• Size: {eraserSize}px</span>}
           </div>
         </div>
       </div>

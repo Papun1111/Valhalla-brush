@@ -2,11 +2,11 @@ import { Tool } from "@/components/Canvas";
 import { getExistingShapes } from "./http";
 
 export type Shape =
-  | { type: "rect"; x: number; y: number; width: number; height: number; color: string; }
-  | { type: "circle"; centerX: number; centerY: number; radius: number; color: string; }
-  | { type: "pencil"; points: Array<{ x: number; y: number }>; color: string; }
-  | { type: "triangle"; x1: number; y1: number; x2: number; y2: number; x3: number; y3: number; color: string; }
-  | { type: "line"; startX: number; startY: number; endX: number; endY: number; color: string; }
+  | { type: "rect"; x: number; y: number; width: number; height: number; color: string; strokeSize: number; }
+  | { type: "circle"; centerX: number; centerY: number; radius: number; color: string; strokeSize: number; }
+  | { type: "pencil"; points: Array<{ x: number; y: number }>; color: string; strokeSize: number; }
+  | { type: "triangle"; x1: number; y1: number; x2: number; y2: number; x3: number; y3: number; color: string; strokeSize: number; }
+  | { type: "line"; startX: number; startY: number; endX: number; endY: number; color: string; strokeSize: number; }
   | { type: "text"; x: number; y: number; text: string; color: string; font: string; };
 
 export class Game {
@@ -16,6 +16,8 @@ export class Game {
   private startY = 0;
   private selectedTool: Tool = "circle";
   private selectedColor: string = "#FFFFFF";
+  private strokeSize: number = 2;
+  private eraserSize: number = 20;
   private currentPencilPoints: Array<{ x: number; y: number }> = [];
 
   // For text tool
@@ -23,6 +25,8 @@ export class Game {
   private textX = 0;
   private textY = 0;
   private currentText = "";
+
+  private ctx: CanvasRenderingContext2D;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -34,8 +38,6 @@ export class Game {
     this.initHandlers();
     this.initMouseHandlers();
   }
-
-  private ctx: CanvasRenderingContext2D;
 
   public destroy(): void {
     this.canvas.removeEventListener("mousedown", this.mouseDownHandler);
@@ -59,18 +61,35 @@ export class Game {
     this.selectedColor = color;
   }
 
+  public setStrokeSize(size: number): void {
+    this.strokeSize = size;
+  }
+
+  public setEraserSize(size: number): void {
+    this.eraserSize = size;
+  }
+
   private async init(): Promise<void> {
-    this.existingShapes = await getExistingShapes(this.roomId);
+    try {
+      this.existingShapes = await getExistingShapes(this.roomId);
+    } catch (error) {
+      console.warn("Failed to load existing shapes:", error);
+      this.existingShapes = [];
+    }
     this.clearCanvas();
   }
 
   private initHandlers(): void {
     this.socket.onmessage = (event: MessageEvent) => {
-      const message = JSON.parse(event.data) as { type: string; message: string };
-      if (message.type === "chat") {
-        const { shape } = JSON.parse(message.message) as { shape: Shape };
-        this.existingShapes.push(shape);
-        this.clearCanvas();
+      try {
+        const message = JSON.parse(event.data) as { type: string; message: string };
+        if (message.type === "chat") {
+          const { shape } = JSON.parse(message.message) as { shape: Shape };
+          this.existingShapes.push(shape);
+          this.clearCanvas();
+        }
+      } catch (error) {
+        console.error("Error handling socket message:", error);
       }
     };
   }
@@ -78,8 +97,14 @@ export class Game {
   private clearCanvas(): void {
     const { width, height } = this.canvas;
     this.ctx.clearRect(0, 0, width, height);
-    this.ctx.fillStyle = "black";
+    
+    // Set a subtle dark background instead of pure black
+    this.ctx.fillStyle = "rgba(15, 23, 42, 0.95)"; // slate-900 with slight transparency
     this.ctx.fillRect(0, 0, width, height);
+
+    // Configure canvas for better drawing
+    this.ctx.lineCap = "round";
+    this.ctx.lineJoin = "round";
 
     for (const shape of this.existingShapes) {
       this.ctx.strokeStyle = shape.color;
@@ -87,9 +112,11 @@ export class Game {
 
       switch (shape.type) {
         case "rect":
+          this.ctx.lineWidth = shape.strokeSize || 2;
           this.ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
           break;
         case "circle":
+          this.ctx.lineWidth = shape.strokeSize || 2;
           this.ctx.beginPath();
           this.ctx.arc(shape.centerX, shape.centerY, shape.radius, 0, Math.PI * 2);
           this.ctx.stroke();
@@ -97,6 +124,7 @@ export class Game {
           break;
         case "pencil":
           if (shape.points.length) {
+            this.ctx.lineWidth = shape.strokeSize || 2;
             this.ctx.beginPath();
             this.ctx.moveTo(shape.points[0].x, shape.points[0].y);
             shape.points.forEach((p) => this.ctx.lineTo(p.x, p.y));
@@ -105,6 +133,7 @@ export class Game {
           }
           break;
         case "triangle":
+          this.ctx.lineWidth = shape.strokeSize || 2;
           this.ctx.beginPath();
           this.ctx.moveTo(shape.x1, shape.y1);
           this.ctx.lineTo(shape.x2, shape.y2);
@@ -113,6 +142,7 @@ export class Game {
           this.ctx.stroke();
           break;
         case "line":
+          this.ctx.lineWidth = shape.strokeSize || 2;
           this.ctx.beginPath();
           this.ctx.moveTo(shape.startX, shape.startY);
           this.ctx.lineTo(shape.endX, shape.endY);
@@ -141,6 +171,11 @@ export class Game {
 
     // Text: click to begin typing
     if (this.selectedTool === "text") {
+      // If we were already typing, finalize the previous text
+      if (this.awaitingText && this.currentText) {
+        this.finalizeText();
+      }
+      
       this.awaitingText = true;
       this.textX = x;
       this.textY = y;
@@ -160,20 +195,7 @@ export class Game {
 
   private mouseUpHandler = (e: MouseEvent): void => {
     if (this.selectedTool === "text") {
-      // finalize text
-      if (!this.currentText) return;
-      const shape: Shape = {
-        type: "text",
-        x: this.textX,
-        y: this.textY,
-        text: this.currentText,
-        color: this.selectedColor,
-        font: "16px sans-serif",
-      };
-      this.pushShape(shape);
-      this.awaitingText = false;
-      window.removeEventListener("keydown", this.keyDownHandler);
-      this.currentText = "";
+      // Text is handled by clicks and keyboard, not mouse up
       return;
     }
 
@@ -186,20 +208,30 @@ export class Game {
     const dy = y - this.startY;
 
     let shape: Shape | null = null;
-    const color = this.selectedTool === "eraser" ? "black" : this.selectedColor;
+    const color = this.selectedTool === "eraser" ? "rgba(15, 23, 42, 0.95)" : this.selectedColor;
+    const strokeSize = this.selectedTool === "eraser" ? this.eraserSize : this.strokeSize;
 
     switch (this.selectedTool) {
       case "rect":
-        shape = { type: "rect", x: this.startX, y: this.startY, width: dx, height: dy, color };
+        shape = { 
+          type: "rect", 
+          x: this.startX, 
+          y: this.startY, 
+          width: dx, 
+          height: dy, 
+          color, 
+          strokeSize 
+        };
         break;
       case "circle":
-        const radius = Math.max(Math.abs(dx), Math.abs(dy)) / 2;
+        const radius = Math.sqrt(dx * dx + dy * dy) / 2;
         shape = {
           type: "circle",
           centerX: this.startX + dx / 2,
           centerY: this.startY + dy / 2,
           radius,
           color,
+          strokeSize,
         };
         break;
       case "pencil":
@@ -209,6 +241,7 @@ export class Game {
             type: "pencil",
             points: [...this.currentPencilPoints],
             color,
+            strokeSize,
           };
         }
         break;
@@ -223,6 +256,7 @@ export class Game {
           x3,
           y3: y,
           color,
+          strokeSize,
         };
         break;
       case "line":
@@ -233,6 +267,7 @@ export class Game {
           endX: x,
           endY: y,
           color,
+          strokeSize,
         };
         break;
     }
@@ -254,33 +289,38 @@ export class Game {
     }
 
     this.clearCanvas();
-    this.ctx.strokeStyle = this.selectedTool === "eraser" ? "black" : this.selectedColor;
+    this.ctx.strokeStyle = this.selectedTool === "eraser" ? "rgba(15, 23, 42, 0.95)" : this.selectedColor;
+    this.ctx.lineWidth = this.selectedTool === "eraser" ? this.eraserSize : this.strokeSize;
 
     switch (this.selectedTool) {
       case "rect":
         this.ctx.strokeRect(this.startX, this.startY, x - this.startX, y - this.startY);
         break;
       case "circle":
-        const radius = Math.max(Math.abs(x - this.startX), Math.abs(y - this.startY)) / 2;
+        const dx = x - this.startX;
+        const dy = y - this.startY;
+        const radius = Math.sqrt(dx * dx + dy * dy) / 2;
         this.ctx.beginPath();
-        this.ctx.arc(this.startX + (x - this.startX) / 2, this.startY + (y - this.startY)/2, radius, 0, Math.PI * 2);
+        this.ctx.arc(this.startX + dx / 2, this.startY + dy / 2, radius, 0, Math.PI * 2);
         this.ctx.stroke();
         this.ctx.closePath();
         break;
       case "pencil":
       case "eraser":
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.currentPencilPoints[0].x, this.currentPencilPoints[0].y);
-        this.currentPencilPoints.forEach((p) => this.ctx.lineTo(p.x, p.y));
-        this.ctx.stroke();
-        this.ctx.closePath();
+        if (this.currentPencilPoints.length > 0) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(this.currentPencilPoints[0].x, this.currentPencilPoints[0].y);
+          this.currentPencilPoints.forEach((p) => this.ctx.lineTo(p.x, p.y));
+          this.ctx.stroke();
+          this.ctx.closePath();
+        }
         break;
       case "triangle":
-        const dx = x - this.startX;
+        const triDx = x - this.startX;
         this.ctx.beginPath();
         this.ctx.moveTo(this.startX, this.startY);
         this.ctx.lineTo(x, y);
-        this.ctx.lineTo(this.startX - dx, y);
+        this.ctx.lineTo(this.startX - triDx, y);
         this.ctx.closePath();
         this.ctx.stroke();
         break;
@@ -302,23 +342,62 @@ export class Game {
 
   private keyDownHandler = (e: KeyboardEvent) => {
     if (!this.awaitingText) return;
+    
+    e.preventDefault(); // Prevent default browser behavior
+    
     if (e.key === "Backspace") {
       this.currentText = this.currentText.slice(0, -1);
     } else if (e.key === "Enter") {
-      // will be picked up on mouseUp
+      this.finalizeText();
+      return;
+    } else if (e.key === "Escape") {
+      this.cancelText();
+      return;
     } else if (e.key.length === 1) {
       this.currentText += e.key;
     }
     this.clearCanvas();
   };
 
+  private finalizeText(): void {
+    if (!this.currentText.trim()) {
+      this.cancelText();
+      return;
+    }
+    
+    const shape: Shape = {
+      type: "text",
+      x: this.textX,
+      y: this.textY,
+      text: this.currentText,
+      color: this.selectedColor,
+      font: "16px sans-serif",
+    };
+    
+    this.pushShape(shape);
+    this.awaitingText = false;
+    window.removeEventListener("keydown", this.keyDownHandler);
+    this.currentText = "";
+  }
+
+  private cancelText(): void {
+    this.awaitingText = false;
+    window.removeEventListener("keydown", this.keyDownHandler);
+    this.currentText = "";
+    this.clearCanvas();
+  }
+
   private pushShape(shape: Shape) {
     this.existingShapes.push(shape);
-    this.socket.send(JSON.stringify({
-      type: "chat",
-      message: JSON.stringify({ shape }),
-      roomId: this.roomId,
-    }));
+    try {
+      this.socket.send(JSON.stringify({
+        type: "chat",
+        message: JSON.stringify({ shape }),
+        roomId: this.roomId,
+      }));
+    } catch (error) {
+      console.error("Failed to send shape to server:", error);
+    }
     this.clearCanvas();
   }
 }
