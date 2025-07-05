@@ -37,12 +37,19 @@ export class Game {
     this.init();
     this.initHandlers();
     this.initMouseHandlers();
+    this.initTouchHandlers(); // Add touch handlers
   }
 
   public destroy(): void {
     this.canvas.removeEventListener("mousedown", this.mouseDownHandler);
     this.canvas.removeEventListener("mouseup", this.mouseUpHandler);
     this.canvas.removeEventListener("mousemove", this.mouseMoveHandler);
+    
+    // Remove touch event listeners
+    this.canvas.removeEventListener("touchstart", this.touchStartHandler);
+    this.canvas.removeEventListener("touchend", this.touchEndHandler);
+    this.canvas.removeEventListener("touchmove", this.touchMoveHandler);
+    
     window.removeEventListener("keydown", this.keyDownHandler);
   }
 
@@ -164,10 +171,34 @@ export class Game {
     }
   }
 
-  private mouseDownHandler = (e: MouseEvent): void => {
+  // Helper method to get coordinates from mouse or touch event
+  private getCoordinates(e: MouseEvent | TouchEvent): { x: number; y: number } {
     const rect = this.canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    let clientX: number, clientY: number;
+
+    if (e instanceof TouchEvent) {
+      if (e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if (e.changedTouches.length > 0) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+      } else {
+        return { x: 0, y: 0 };
+      }
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  private handleStart(e: MouseEvent | TouchEvent): void {
+    const { x, y } = this.getCoordinates(e);
 
     // Text: click to begin typing
     if (this.selectedTool === "text") {
@@ -191,19 +222,17 @@ export class Game {
     if (this.selectedTool === "pencil" || this.selectedTool === "eraser") {
       this.currentPencilPoints = [{ x, y }];
     }
-  };
+  }
 
-  private mouseUpHandler = (e: MouseEvent): void => {
+  private handleEnd(e: MouseEvent | TouchEvent): void {
     if (this.selectedTool === "text") {
-      // Text is handled by clicks and keyboard, not mouse up
+      // Text is handled by clicks and keyboard, not mouse/touch up
       return;
     }
 
     if (!this.clicked) return;
     this.clicked = false;
-    const rect = this.canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const { x, y } = this.getCoordinates(e);
     const dx = x - this.startX;
     const dy = y - this.startY;
 
@@ -274,15 +303,13 @@ export class Game {
 
     this.currentPencilPoints = [];
     if (shape) this.pushShape(shape);
-  };
+  }
 
-  private mouseMoveHandler = (e: MouseEvent): void => {
+  private handleMove(e: MouseEvent | TouchEvent): void {
     if (this.selectedTool === "text") return;
     if (!this.clicked) return;
 
-    const rect = this.canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const { x, y } = this.getCoordinates(e);
 
     if (this.selectedTool === "pencil" || this.selectedTool === "eraser") {
       this.currentPencilPoints.push({ x, y });
@@ -332,12 +359,48 @@ export class Game {
         this.ctx.closePath();
         break;
     }
+  }
+
+  // Mouse event handlers
+  private mouseDownHandler = (e: MouseEvent): void => {
+    this.handleStart(e);
+  };
+
+  private mouseUpHandler = (e: MouseEvent): void => {
+    this.handleEnd(e);
+  };
+
+  private mouseMoveHandler = (e: MouseEvent): void => {
+    this.handleMove(e);
+  };
+
+  // Touch event handlers
+  private touchStartHandler = (e: TouchEvent): void => {
+    e.preventDefault(); // Prevent scrolling, zooming, etc.
+    this.handleStart(e);
+  };
+
+  private touchEndHandler = (e: TouchEvent): void => {
+    e.preventDefault();
+    this.handleEnd(e);
+  };
+
+  private touchMoveHandler = (e: TouchEvent): void => {
+    e.preventDefault();
+    this.handleMove(e);
   };
 
   private initMouseHandlers(): void {
     this.canvas.addEventListener("mousedown", this.mouseDownHandler);
     this.canvas.addEventListener("mouseup", this.mouseUpHandler);
     this.canvas.addEventListener("mousemove", this.mouseMoveHandler);
+  }
+
+  private initTouchHandlers(): void {
+    // Add touch event listeners
+    this.canvas.addEventListener("touchstart", this.touchStartHandler, { passive: false });
+    this.canvas.addEventListener("touchend", this.touchEndHandler, { passive: false });
+    this.canvas.addEventListener("touchmove", this.touchMoveHandler, { passive: false });
   }
 
   private keyDownHandler = (e: KeyboardEvent) => {
