@@ -1,5 +1,5 @@
 import { Tool } from "@/components/Canvas";
-import { getExistingShapes } from "./http";
+import { getExistingShapes } from "./index";
 
 export type Shape =
   | { type: "rect"; x: number; y: number; width: number; height: number; color: string; strokeSize: number; }
