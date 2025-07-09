@@ -66,14 +66,14 @@ export default function App() {
                   <Button
                     variant="ghost"
                     size="lg"
-                    className="h-14 px-10 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-2xl transform hover:scale-110 hover:-translate-y-1 transition-all duration-300 border border-purple-500/50 hover:border-purple-400 hover:shadow-purple-500/25 group">
+                    className="h-14 px-10 border-2 border-gray-600 text-gray-300 hover:bg-white hover:text-black hover:border-white transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 shadow-xl hover:shadow-2xl group">
                     <span className="font-semibold">Sign In</span>
-                    <FiEdit2 className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                    <FiEdit2 className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-1000" />
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="lg"
                     className="h-14 px-10 border-2 border-gray-600 text-gray-300 hover:bg-white hover:text-black hover:border-white transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 shadow-xl hover:shadow-2xl group">
                     <span className="font-semibold">Sign Up</span>
@@ -334,7 +334,7 @@ export default function App() {
           
           <div className="flex flex-col items-center justify-between gap-6 sm:flex-row pt-8 border-t border-gray-800">
             <p className="text-sm text-gray-500">
-              © 2025 ValhallaBrush. All rights reserved. Crafted with ❤️ for creators worldwide.
+              © 2025 ValhallaBrush. All rights reserved. Crafted with ❤️ by <a className="decoration-inherit underline" href="https://papun-mohapatra.vercel.app/">Papun</a> for creators worldwide.
             </p>
             <div className="flex space-x-6">
               <a href="https://github.com" className="text-gray-500 hover:text-white hover:scale-125 transition-all duration-300 transform">
