@@ -2,10 +2,16 @@
   "name": "draw-app",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+  "prebuild": "cd packages/db && npx prisma generate && cd ../../",
+  "build": "npm run prebuild && turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+     "start:websocket": "cd apps/ws-backend && pnpm run dev",
+      "start:backend": "cd apps/http-backend && pnpm run dev",
+      "build:frontend":"cd apps/excelidraw-frontend && pnpm run build",
+      "start:frontend": "cd apps/excelidraw-frontend && pnpm run start",
+      "start:next":"pnpm run build:frontend && pnpm run start:frontend"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

@@ -10,6 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors())
 
+const port=8000;
 app.post("/signup", async (req, res) => {
 
     const parsedData = CreateUserSchema.safeParse(req.body);
@@ -149,6 +150,6 @@ app.get("/room/:slug",async (req, res) => {
     })
 })
 
-app.listen(8000,()=>{
-    console.log("listening on port 8000");
+app.listen(port,()=>{
+    console.log(`listening on port ${port}`);
 });

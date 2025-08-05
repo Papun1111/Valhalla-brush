@@ -1,0 +1,25 @@
+FROM node:20-slim AS base
+
+# Install pnpm and turbo globally
+RUN npm install -g pnpm turbo
+
+# Set working directory
+WORKDIR /app
+
+# Copy dependency files first for better Docker layer caching
+COPY pnpm-workspace.yaml turbo.json package.json pnpm-lock.yaml ./
+
+# Install all workspace dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy all workspace projects (required for turborepo)
+COPY ./packages ./packages
+COPY ./apps ./apps
+
+# Build the specific frontend app using turbo
+
+# Expose frontend port
+EXPOSE 3000
+
+# Start the Next.js frontend app
+CMD ["pnpm", "run", "start:next"]

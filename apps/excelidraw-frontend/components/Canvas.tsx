@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
-import { Circle, Pencil, Square, Triangle, Minus, Settings, Eraser, Type as TextIcon, X, Info } from "lucide-react";
+import { Circle, Pencil, Square, Triangle, Minus, Settings, Eraser, Type as TextIcon, X, Info, Download } from "lucide-react";
 import { Game } from "@/draw/Game";
+import { PDFExporter, ExportOptions } from '@/utils/pdfExport';
+import { ExportModal } from './ExportModal';
 
 export type Tool = "circle" | "rect" | "pencil" | "triangle" | "line" | "eraser" | "text";
 
@@ -36,6 +38,8 @@ export function Canvas({
   const [eraserSize, setEraserSize] = useState<number>(20);
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [showExportModal, setShowExportModal] = useState<boolean>(false);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   // Handle canvas resizing
   useEffect(() => {
@@ -108,8 +112,15 @@ export function Canvas({
           break;
         case 's':
           if (e.ctrlKey || e.metaKey) {
-            e.preventDefault();
-            setShowSettings(!showSettings);
+            if (e.shiftKey) {
+              // Ctrl+Shift+S for export
+              e.preventDefault();
+              setShowExportModal(true);
+            } else {
+              // Ctrl+S for settings
+              e.preventDefault();
+              setShowSettings(!showSettings);
+            }
           }
           break;
       }
@@ -118,6 +129,30 @@ export function Canvas({
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [selectedTool, showSettings]);
+
+  // Handle PDF export
+  const handleExportToPDF = async (options: ExportOptions = {}) => {
+    if (!canvasRef.current) {
+      console.error('Canvas not available for export');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      await PDFExporter.exportHighQualityPDF(canvasRef.current, {
+        filename: `drawing-${roomId}-${Date.now()}`,
+        includeBackground: true,
+        orientation: 'landscape',
+        ...options
+      });
+    } catch (error) {
+      console.error('Export failed:', error);
+      // You could add a toast notification here
+    } finally {
+      setIsExporting(false);
+      setShowExportModal(false);
+    }
+  };
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -142,6 +177,7 @@ export function Canvas({
         setShowSettings={setShowSettings}
         showInstructions={showInstructions}
         setShowInstructions={setShowInstructions}
+        onExport={() => setShowExportModal(true)}
       />
 
       {showSettings && (
@@ -161,6 +197,14 @@ export function Canvas({
         <InstructionsPanel
           setShowInstructions={setShowInstructions}
           selectedTool={selectedTool}
+        />
+      )}
+
+      {showExportModal && (
+        <ExportModal
+          onExport={handleExportToPDF}
+          onClose={() => setShowExportModal(false)}
+          isExporting={isExporting}
         />
       )}
 
@@ -192,6 +236,7 @@ function Topbar({
   setShowSettings,
   showInstructions,
   setShowInstructions,
+  onExport,
 }: {
   selectedTool: Tool;
   setSelectedTool: (s: Tool) => void;
@@ -201,6 +246,7 @@ function Topbar({
   setShowSettings: (show: boolean) => void;
   showInstructions: boolean;
   setShowInstructions: (show: boolean) => void;
+  onExport: () => void;
 }) {
   const tools = [
     { id: "pencil", icon: Pencil, label: "Pencil (P)", description: "Draw freehand" },
@@ -335,6 +381,29 @@ function Topbar({
                           opacity-0 group-hover:opacity-100 transition-opacity duration-200
                           pointer-events-none whitespace-nowrap z-10">
               Instructions
+            </div>
+          </div>
+
+          <div className="relative group">
+            <IconButton
+              onClick={onExport}
+              activated={false}
+              icon={<Download className="w-4 h-4 md:w-5 md:h-5" />}
+              customStyle={{
+                backgroundColor: "rgba(34, 197, 94, 0.8)",
+                borderRadius: '12px',
+                padding: '10px 12px',
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                boxShadow: '0 4px 12px rgba(34, 197, 94, 0.25)',
+              }}
+            />
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 
+                          bg-slate-800 text-white text-xs px-2 py-1 rounded-lg
+                          opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                          pointer-events-none whitespace-nowrap z-10">
+              Export to PDF (Ctrl+Shift+S)
             </div>
           </div>
         </div>
@@ -611,6 +680,10 @@ function InstructionsPanel({
               <div className="flex justify-between">
                 <span className="text-slate-400">Ctrl+S</span>
                 <span className="text-slate-300">Settings</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Ctrl+Shift+S</span>
+                <span className="text-slate-300">Export PDF</span>
               </div>
             </div>
           </div>
