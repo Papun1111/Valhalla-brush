@@ -15,5 +15,5 @@ RUN pnpm install --frozen-lockfile
 
 EXPOSE 3000
 
-# Start the Next.js frontend app
+
 CMD ["pnpm", "run", "start:next"]
