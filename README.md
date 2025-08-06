@@ -67,7 +67,8 @@ This is an early-stage project; many features (e.g., authentication, advanced to
 2. **Install Dependencies**
 
    ```bash
-   npm install
+   npm i -g pnpm install
+   pnpm install
    ```
 
 3. **Environment Variables**
@@ -75,7 +76,6 @@ This is an early-stage project; many features (e.g., authentication, advanced to
 
    ```env
    DATABASE_URL="postgresql://user:password@localhost:5432/valhalla"
-   NEXT_PUBLIC_WS_URL="wss://your-domain.com/socket"
    ```
 
 4. **Database Migrations**
@@ -87,7 +87,7 @@ This is an early-stage project; many features (e.g., authentication, advanced to
 5. **Run Locally**
 
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
    Open [http://localhost:3000](http://localhost:3000)
@@ -99,19 +99,10 @@ This is an early-stage project; many features (e.g., authentication, advanced to
 1. **Build**
 
    ```bash
-   npm run build
+   pnpm run build
    ```
 
-2. **Dockerise**
-
-   ```dockerfile
-   FROM node:18-alpine
-   WORKDIR /app
-   COPY . .
-   RUN npm ci && npm run build
-   CMD ["npm", "start"]
-   ```
-
+2.
 3. **Reverse Proxy (Nginx)**
 
    ```nginx
@@ -130,13 +121,7 @@ This is an early-stage project; many features (e.g., authentication, advanced to
    }
    ```
 
-4. **CI/CD**
-
-   * Build & push Docker image
-   * Deploy to your Kubernetes/VM cluster
-   * Automate DB migrations
-
----
+4
 
 ## 📈 Roadmap
 
@@ -156,7 +141,6 @@ This is an early-stage project; many features (e.g., authentication, advanced to
 4. Push to branch (`git push origin feature/name`)
 5. Open a Pull Request
 
-Please follow the [Code of Conduct](./CODE_OF_CONDUCT.md) and ensure all tests pass.
 
 ---
 
