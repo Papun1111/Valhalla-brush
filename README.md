@@ -81,7 +81,12 @@ This is an early-stage project; many features (e.g., authentication, advanced to
 4. **Database Migrations**
 
    ```bash
-   npx prisma migrate dev --name init
+   cd packages
+   cd db
+   touch .env
+   DATABASE_URL="postgresql://postgres:password@localhost:5432/postgres"
+   npx prisma migrate dev --name init\
+   npx prisma generate
    ```
 
 5. **Run Locally**
