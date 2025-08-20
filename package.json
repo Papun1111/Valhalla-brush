@@ -8,6 +8,7 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
      "start:websocket": "cd apps/ws-backend && pnpm run dev",
+    "build:websocket": "cd apps/ws-backend && pnpm run build && cd ../../",
       "start:backend": "cd apps/http-backend && pnpm run dev",
       "build:frontend":"cd apps/excelidraw-frontend && pnpm run build",
       "start:frontend": "cd apps/excelidraw-frontend && pnpm run start",
