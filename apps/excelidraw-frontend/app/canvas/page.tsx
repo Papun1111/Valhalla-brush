@@ -1,9 +1,17 @@
 "use client";
-
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HTTP_BACKEND } from "@/config";
+import {
+  Plus,
+  Users,
+  Copy,
+  Check,
+  ArrowRight,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 
 export default function CreateJoinRoom() {
   const [roomName, setRoomName] = useState("");
@@ -11,6 +19,7 @@ export default function CreateJoinRoom() {
   const [joinId, setJoinId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   const router = useRouter();
 
   const handleCreate = async () => {
@@ -18,7 +27,10 @@ export default function CreateJoinRoom() {
     setLoading(true);
 
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("authorization") : null;
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("authorization")
+          : null;
       if (!token) throw new Error("Authorization token not found");
 
       const response = await axios.post(
@@ -30,16 +42,14 @@ export default function CreateJoinRoom() {
       const { roomId } = response.data;
       setRoomId(String(roomId));
     } catch (err: unknown) {
-      let message = 'Failed to create room';
-    
+      let message = "Failed to create room";
+
       if (axios.isAxiosError(err)) {
-        // err is an AxiosError
         message = err.response?.data?.message ?? err.message;
       } else if (err instanceof Error) {
-        // any other JS Error
         message = err.message;
       }
-    
+
       setError(message);
     } finally {
       setLoading(false);
@@ -53,48 +63,301 @@ export default function CreateJoinRoom() {
     }
   };
 
+  const handleCopyRoomId = async () => {
+    if (roomId) {
+      try {
+        await navigator.clipboard.writeText(roomId);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy room ID:", err);
+      }
+    }
+  };
+
+  const handleStartDrawing = () => {
+    if (roomId) {
+      router.push(`/canvas/${encodeURIComponent(roomId)}`);
+    }
+  };
+
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-gray-800 rounded-2xl shadow-lg">
-      {!roomId ? (
-        <>
-          <h2 className="text-2xl font-bold text-white mb-4">Create a New Room</h2>
-          <input
-            type="text"
-            value={roomName}
-            onChange={(e) => setRoomName(e.target.value)}
-            placeholder="Room name"
-            className="w-full px-4 py-2 mb-4 bg-gray-700 text-gray-100 rounded-lg placeholder-gray-400"
-          />
-          <button
-            onClick={handleCreate}
-            disabled={!roomName.trim() || loading}
-            className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg transition"
-          >
-            {loading ? "Creating..." : "Create Room"}
-          </button>
-          {error && <p className="mt-2 text-red-500">{error}</p>}
-        </>
-      ) : (
-        <>
-          <h2 className="text-2xl font-bold text-white mb-2">Room Created!</h2>
-          <p className="text-indigo-300 mb-4">
-            Your room ID: <strong>{roomId}</strong>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
+            Collaborative Canvas
+          </h1>
+          <p className="text-slate-400 text-sm">
+            Create or join a room to start drawing together
           </p>
-          <input
-            type="text"
-            value={joinId}
-            onChange={(e) => setJoinId(e.target.value)}
-            placeholder="Enter room ID to join"
-            className="w-full px-4 py-2 mb-4 bg-gray-700 text-gray-100 rounded-lg placeholder-gray-400"
-          />
-          <button
-            onClick={handleJoin}
-            className="w-full py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition"
-          >
-            Join Room
-          </button>
-        </>
-      )}
+        </div>
+
+        {!roomId ? (
+          /* Create Room Form */
+          <div className="bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                <Plus className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white tracking-tight">
+                  Create New Room
+                </h2>
+                <p className="text-slate-400 text-sm">
+                  Start a new collaborative session
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="roomName"
+                  className="block text-sm font-medium text-slate-300 mb-2"
+                >
+                  Room Name
+                </label>
+                <input
+                  id="roomName"
+                  type="text"
+                  value={roomName}
+                  onChange={(e) => setRoomName(e.target.value)}
+                  placeholder="Enter a descriptive room name..."
+                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 
+                           text-slate-100 rounded-xl placeholder-slate-400
+                           focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50
+                           transition-all duration-200 outline-none"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" && roomName.trim() && !loading) {
+                      handleCreate();
+                    }
+                  }}
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  Choose a name that describes your drawing session
+                </p>
+              </div>
+
+              <button
+                onClick={handleCreate}
+                disabled={!roomName.trim() || loading}
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 
+                         hover:from-blue-500 hover:to-blue-600 
+                         disabled:from-slate-600 disabled:to-slate-700
+                         disabled:cursor-not-allowed
+                         text-white font-medium rounded-xl 
+                         transition-all duration-200 
+                         focus:ring-2 focus:ring-blue-500/50 outline-none
+                         flex items-center justify-center gap-2
+                         shadow-lg hover:shadow-xl"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Creating Room...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    Create Room
+                  </>
+                )}
+              </button>
+
+              {error && (
+                <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                  <p className="text-red-400 text-sm">{error}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 my-6">
+              <div className="flex-1 h-px bg-slate-600/50"></div>
+              <span className="text-slate-500 text-sm font-medium">OR</span>
+              <div className="flex-1 h-px bg-slate-600/50"></div>
+            </div>
+
+            {/* Join Room Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                  <Users className="w-4 h-4 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-white">
+                    Join Existing Room
+                  </h3>
+                  <p className="text-slate-400 text-sm">
+                    Enter a room ID to join
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="joinId"
+                  className="block text-sm font-medium text-slate-300 mb-2"
+                >
+                  Room ID
+                </label>
+                <input
+                  id="joinId"
+                  type="text"
+                  value={joinId}
+                  onChange={(e) => setJoinId(e.target.value)}
+                  placeholder="Paste room ID here..."
+                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 
+                           text-slate-100 rounded-xl placeholder-slate-400
+                           focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50
+                           transition-all duration-200 outline-none"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" && joinId.trim()) {
+                      handleJoin();
+                    }
+                  }}
+                />
+              </div>
+
+              <button
+                onClick={handleJoin}
+                disabled={!joinId.trim()}
+                className="w-full py-3 bg-gradient-to-r from-green-600 to-green-700 
+                         hover:from-green-500 hover:to-green-600 
+                         disabled:from-slate-600 disabled:to-slate-700
+                         disabled:cursor-not-allowed
+                         text-white font-medium rounded-xl 
+                         transition-all duration-200 
+                         focus:ring-2 focus:ring-green-500/50 outline-none
+                         flex items-center justify-center gap-2
+                         shadow-lg hover:shadow-xl"
+              >
+                <ArrowRight className="w-4 h-4" />
+                Join Room
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* Room Created Success */
+          <div className="bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
+                Room Created Successfully!
+              </h2>
+              <p className="text-slate-400">
+                Your collaborative canvas is ready
+              </p>
+            </div>
+
+            {/* Room Info */}
+            <div className="bg-slate-700/30 rounded-xl p-4 mb-6 border border-slate-600/30">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-slate-300">
+                  Room Name
+                </span>
+                <span className="text-slate-100 font-medium">{roomName}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-300">
+                  Room ID
+                </span>
+                <div className="flex items-center gap-2">
+                  <code className="bg-slate-800/60 px-2 py-1 rounded text-slate-100 text-sm font-mono">
+                    {roomId}
+                  </code>
+                  <button
+                    onClick={handleCopyRoomId}
+                    className="p-1 hover:bg-slate-600/50 rounded transition-colors"
+                    title="Copy Room ID"
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 text-green-400" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-slate-400 hover:text-slate-200" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-3">
+              <button
+                onClick={handleStartDrawing}
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 
+                         hover:from-blue-500 hover:to-blue-600 
+                         text-white font-medium rounded-xl 
+                         transition-all duration-200 
+                         focus:ring-2 focus:ring-blue-500/50 outline-none
+                         flex items-center justify-center gap-2
+                         shadow-lg hover:shadow-xl"
+              >
+                <ArrowRight className="w-4 h-4" />
+                Start Drawing
+              </button>
+
+              {/* Share Info */}
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
+                <p className="text-blue-400 text-sm text-center">
+                  Share the Room ID with others to invite them to collaborate
+                </p>
+              </div>
+
+              {/* Join Another Room */}
+              <div className="pt-4 border-t border-slate-600/30">
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-slate-300 text-center">
+                    Or join another room
+                  </h3>
+                  <input
+                    type="text"
+                    value={joinId}
+                    onChange={(e) => setJoinId(e.target.value)}
+                    placeholder="Enter room ID to join..."
+                    className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600/50 
+                             text-slate-100 rounded-lg placeholder-slate-400
+                             focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50
+                             transition-all duration-200 outline-none text-sm"
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter" && joinId.trim()) {
+                        handleJoin();
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={handleJoin}
+                    disabled={!joinId.trim()}
+                    className="w-full py-2.5 bg-gradient-to-r from-green-600 to-green-700 
+                             hover:from-green-500 hover:to-green-600 
+                             disabled:from-slate-600 disabled:to-slate-700
+                             disabled:cursor-not-allowed
+                             text-white font-medium rounded-lg 
+                             transition-all duration-200 
+                             focus:ring-2 focus:ring-green-500/50 outline-none
+                             flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Users className="w-4 h-4" />
+                    Join Room
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="text-center mt-6">
+          <p className="text-slate-500 text-xs">
+            Real-time collaborative drawing • Share ideas visually
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

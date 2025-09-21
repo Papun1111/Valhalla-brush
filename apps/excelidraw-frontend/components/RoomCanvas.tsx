@@ -10,7 +10,7 @@ export function RoomCanvas({ roomId }: { roomId: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    // Retrieve token from localStorage
+
     const token =
       typeof window !== "undefined"
         ? localStorage.getItem("authorization")

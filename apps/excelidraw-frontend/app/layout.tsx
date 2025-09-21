@@ -30,7 +30,7 @@ export default function RootLayout({
 <link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap" rel="stylesheet"></link>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased` } suppressHydrationWarning={true}
       >
         <ToastContainer/>
         {children}
