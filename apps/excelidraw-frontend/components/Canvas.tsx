@@ -59,6 +59,7 @@ export function Canvas({
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [showGrid, setShowGrid] = useState<boolean>(true);
 
   // Handle canvas resizing
   useEffect(() => {
@@ -178,7 +179,7 @@ export function Canvas({
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black font-sans">
+    <div className="relative h-screen w-full overflow-hidden bg-gradient-to-r from-red-300 via-rose-600 to-red-900 font-sans">
       <canvas
         ref={canvasRef}
         width={canvasSize.width}
@@ -216,6 +217,8 @@ export function Canvas({
           eraserSize={eraserSize}
           setEraserSize={setEraserSize}
           selectedTool={selectedTool}
+          showGrid={showGrid}
+          setShowGrid={setShowGrid}
         />
       )}
 
@@ -236,18 +239,20 @@ export function Canvas({
 
       {selectedTool === "text" && <TextInstructions />}
 
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(156, 163, 175, 0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(156, 163, 175, 0.3) 1px, transparent 1px)
-            `,
-            backgroundSize: "20px 20px",
-          }}
-        />
-      </div>
+      {showGrid && (
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px)
+              `,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -316,7 +321,7 @@ function Topbar({
     <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-30">
       <div
         className="flex flex-wrap items-center gap-1 
-                      bg-white border border-gray-200 
+                      bg-white/95 backdrop-blur-sm border border-white/30 
                       rounded-xl p-1 shadow-lg
                       animate-in slide-in-from-top-2 duration-300"
       >
@@ -333,7 +338,7 @@ function Topbar({
                     backgroundColor:
                       selectedTool === tool.id
                         ? tool.id === "eraser"
-                          ? "rgba(239, 68, 68, 1)"
+                          ? "rgba(220, 38, 38, 1)"
                           : tool.id === "text"
                             ? "rgba(34, 197, 94, 1)"
                             : "rgba(59, 130, 246, 1)"
@@ -352,7 +357,7 @@ function Topbar({
                 />
                 <div
                   className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 
-                              bg-gray-800 text-white text-xs px-2 py-1 rounded-md
+                              bg-gray-900 text-white text-xs px-2 py-1 rounded-md
                               opacity-0 group-hover:opacity-100 transition-opacity duration-200
                               pointer-events-none whitespace-nowrap z-10"
                 >
@@ -361,7 +366,7 @@ function Topbar({
                   <div
                     className="absolute -top-1 left-1/2 transform -translate-x-1/2 
                                 w-0 h-0 border-l-2 border-r-2 border-b-2 
-                                border-l-transparent border-r-transparent border-b-gray-800"
+                                border-l-transparent border-r-transparent border-b-gray-900"
                   ></div>
                 </div>
               </div>
@@ -369,7 +374,7 @@ function Topbar({
           })}
         </div>
 
-        <div className="w-px h-8 bg-gray-200 mx-1" />
+        <div className="w-px h-8 bg-gray-300 mx-1" />
 
         <div className="flex items-center gap-0">
           <div className="relative group">
@@ -396,7 +401,7 @@ function Topbar({
             >
               <div
                 className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 
-                          w-4 h-1 rounded-full"
+                          w-4 h-1 rounded-full border border-gray-200"
                 style={{
                   backgroundColor: selectedColor,
                 }}
@@ -404,7 +409,7 @@ function Topbar({
             </IconButton>
             <div
               className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 
-                          bg-gray-800 text-white text-xs px-2 py-1 rounded-md
+                          bg-gray-900 text-white text-xs px-2 py-1 rounded-md
                           opacity-0 group-hover:opacity-100 transition-opacity duration-200
                           pointer-events-none whitespace-nowrap z-10"
             >
@@ -435,7 +440,7 @@ function Topbar({
             />
             <div
               className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 
-                          bg-gray-800 text-white text-xs px-2 py-1 rounded-md
+                          bg-gray-900 text-white text-xs px-2 py-1 rounded-md
                           opacity-0 group-hover:opacity-100 transition-opacity duration-200
                           pointer-events-none whitespace-nowrap z-10"
             >
@@ -464,7 +469,7 @@ function Topbar({
             />
             <div
               className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 
-                          bg-gray-800 text-white text-xs px-2 py-1 rounded-md
+                          bg-gray-900 text-white text-xs px-2 py-1 rounded-md
                           opacity-0 group-hover:opacity-100 transition-opacity duration-200
                           pointer-events-none whitespace-nowrap z-10"
             >
@@ -486,6 +491,8 @@ function ColorPicker({
   eraserSize,
   setEraserSize,
   selectedTool,
+  showGrid,
+  setShowGrid,
 }: {
   selectedColor: string;
   setSelectedColor: (color: string) => void;
@@ -495,13 +502,15 @@ function ColorPicker({
   eraserSize: number;
   setEraserSize: (size: number) => void;
   selectedTool: Tool;
+  showGrid: boolean;
+  setShowGrid: (show: boolean) => void;
 }) {
   const [customColor, setCustomColor] = useState<string>("#000000");
 
   return (
     <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40">
       <div
-        className="bg-white border border-gray-200 
+        className="bg-white/95 backdrop-blur-sm border border-white/30 
                       rounded-xl p-4 shadow-lg
                       animate-in slide-in-from-top-2 duration-300 min-w-[320px]"
       >
@@ -561,6 +570,26 @@ function ColorPicker({
                         hover:border-gray-300"
             >
               Use Custom Color
+            </button>
+          </div>
+        </div>
+
+        {/* Grid Toggle */}
+        <div className="mb-4 pt-4 border-t border-gray-200">
+          <h4 className="text-gray-700 text-sm font-semibold mb-3 tracking-tight">
+            Canvas Options
+          </h4>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-700 text-sm font-medium">Show Grid</span>
+            <button
+              onClick={() => setShowGrid(!showGrid)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none
+                ${showGrid ? 'bg-blue-600' : 'bg-gray-300'}`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200
+                  ${showGrid ? 'translate-x-6' : 'translate-x-1'}`}
+              />
             </button>
           </div>
         </div>
@@ -720,7 +749,7 @@ function InstructionsPanel({
   return (
     <div className="fixed top-20 right-4 z-40 max-w-sm">
       <div
-        className="bg-white border border-gray-200 
+        className="bg-white/95 backdrop-blur-sm border border-white/30 
                       rounded-xl p-4 shadow-lg
                       animate-in slide-in-from-top-2 duration-300"
       >
@@ -829,7 +858,7 @@ function TextInstructions() {
   return (
     <div className="fixed bottom-4 left-4 z-40">
       <div
-        className="bg-white border border-gray-200 
+        className="bg-white/95 backdrop-blur-sm border border-white/30 
                       rounded-xl p-3 shadow-lg
                       animate-in slide-in-from-bottom-2 duration-300"
       >

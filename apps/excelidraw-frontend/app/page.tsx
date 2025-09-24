@@ -30,7 +30,7 @@ const App: FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-gray-100 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-r from-stone-300 to-indigo-600 text-gray-100 overflow-x-hidden">
       <AnimatedBackground />
       <ToastContainer theme="dark" position="bottom-right" autoClose={3000} />
       <HeroSection isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
