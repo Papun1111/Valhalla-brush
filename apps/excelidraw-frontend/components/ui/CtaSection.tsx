@@ -33,9 +33,10 @@ export const CtaSection: FC<CtaSectionProps> = ({ isLoggedIn }) => (
                 <Link href="/canvas">
                   <Button
                     size="lg"
+                    variant="ghost"
                     className="h-14 px-12 bg-white text-stone-900 hover:bg-stone-100 rounded-full font-medium tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
                   >
-                    <span>Open Canvas</span>
+                    <span className="text-black">Open Canvas</span>
                     <FiEdit2 className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
                   </Button>
                 </Link>

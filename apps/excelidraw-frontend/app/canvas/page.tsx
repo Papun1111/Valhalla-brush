@@ -82,204 +82,211 @@ export default function CreateJoinRoom() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-stone-300 via-lime-100 to-red-200 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-stone-100 to-stone-200 flex items-center justify-center p-4">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-stone-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-stone-400/15 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2 tracking-tight">
-            Collaborative Canvas
+        <div className="mb-8">
+          <div className="flex items-center gap-3 text-sm text-stone-600 tracking-wide mb-4">
+            <div className="w-8 h-px bg-stone-400"></div>
+            <span className="uppercase">Collaborative Space</span>
+          </div>
+          <h1 className="text-4xl font-light text-stone-900 mb-3 leading-tight">
+            {!roomId ? (
+              <>Create or join<br /><span className="font-serif italic">your room</span></>
+            ) : (
+              <>Room is<br /><span className="font-serif italic">ready</span></>
+            )}
           </h1>
-          <p className="text-gray-600 text-sm">
-            Create or join a room to start drawing together
+          <p className="text-stone-600 text-sm">
+            {!roomId 
+              ? "Start a new session or join an existing collaborative canvas"
+              : "Your collaborative canvas is ready to use"
+            }
           </p>
         </div>
 
         {!roomId ? (
           /* Create Room Form */
-          <div className="bg-white/80 backdrop-blur-md border border-gray-200/50 rounded-2xl p-6 shadow-2xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-stone-200 to-stone-300 rounded-xl flex items-center justify-center">
-                <Plus className="w-5 h-5 text-stone-700" />
-              </div>
+          <div className="bg-white border border-stone-200 rounded-2xl p-8 shadow-lg">
+            <div className="space-y-6">
+              {/* Create Room Section */}
               <div>
-                <h2 className="text-xl font-semibold text-gray-800 tracking-tight">
-                  Create New Room
-                </h2>
-                <p className="text-gray-600 text-sm">
-                  Start a new collaborative session
-                </p>
-              </div>
-            </div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-stone-900 rounded-lg">
+                    <Plus className="w-4 h-4 text-white" />
+                  </div>
+                  <h2 className="text-lg font-medium text-stone-900">
+                    Create New Room
+                  </h2>
+                </div>
 
-            <div className="space-y-4">
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="roomName"
+                      className="block text-xs uppercase tracking-wide font-medium text-stone-700 mb-2"
+                    >
+                      Room Name
+                    </label>
+                    <input
+                      id="roomName"
+                      type="text"
+                      value={roomName}
+                      onChange={(e) => setRoomName(e.target.value)}
+                      placeholder="Enter room name"
+                      className="w-full px-4 py-3 bg-stone-50 border border-stone-300 
+                               text-stone-900 rounded-lg placeholder-stone-400
+                               focus:ring-2 focus:ring-stone-400 focus:border-transparent
+                               transition-all duration-200 outline-none"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter" && roomName.trim() && !loading) {
+                          handleCreate();
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleCreate}
+                    disabled={!roomName.trim() || loading}
+                    className="w-full py-3 bg-stone-900 hover:bg-stone-800
+                             disabled:bg-stone-400 disabled:cursor-not-allowed
+                             text-white font-medium rounded-lg 
+                             transition-all duration-200 
+                             focus:ring-2 focus:ring-stone-400 outline-none
+                             flex items-center justify-center gap-2 shadow-lg"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Creating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4" />
+                        <span>Create Room</span>
+                      </>
+                    )}
+                  </button>
+
+                  {error && (
+                    <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                      <p className="text-red-700 text-sm">{error}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="flex items-center gap-4">
+                <div className="flex-1 h-px bg-stone-200"></div>
+                <span className="text-stone-500 text-xs uppercase tracking-wide font-medium">Or</span>
+                <div className="flex-1 h-px bg-stone-200"></div>
+              </div>
+
+              {/* Join Room Section */}
               <div>
-                <label
-                  htmlFor="roomName"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Room Name
-                </label>
-                <input
-                  id="roomName"
-                  type="text"
-                  value={roomName}
-                  onChange={(e) => setRoomName(e.target.value)}
-                  placeholder="Enter a descriptive room name..."
-                  className="w-full px-4 py-3 bg-white/70 border border-gray-300/50 
-                           text-gray-800 rounded-xl placeholder-gray-500
-                           focus:ring-2 focus:ring-stone-400/50 focus:border-stone-400/50
-                           transition-all duration-200 outline-none backdrop-blur-sm"
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter" && roomName.trim() && !loading) {
-                      handleCreate();
-                    }
-                  }}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Choose a name that describes your drawing session
-                </p>
-              </div>
-
-              <button
-                onClick={handleCreate}
-                disabled={!roomName.trim() || loading}
-                className="w-full py-3 bg-gradient-to-r from-stone-600 to-gray-700 
-                         hover:from-stone-500 hover:to-gray-600 
-                         disabled:from-gray-400 disabled:to-gray-500
-                         disabled:cursor-not-allowed
-                         text-white font-medium rounded-xl 
-                         transition-all duration-200 
-                         focus:ring-2 focus:ring-stone-400/50 outline-none
-                         flex items-center justify-center gap-2
-                         shadow-lg hover:shadow-xl"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating Room...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-4 h-4" />
-                    Create Room
-                  </>
-                )}
-              </button>
-
-              {error && (
-                <div className="flex items-center gap-2 p-3 bg-red-100/80 border border-red-300/50 rounded-xl backdrop-blur-sm">
-                  <AlertCircle className="w-4 h-4 text-red-700 flex-shrink-0" />
-                  <p className="text-red-800 text-sm">{error}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Divider */}
-            <div className="flex items-center gap-4 my-6">
-              <div className="flex-1 h-px bg-gray-300/50"></div>
-              <span className="text-gray-500 text-sm font-medium">OR</span>
-              <div className="flex-1 h-px bg-gray-300/50"></div>
-            </div>
-
-            {/* Join Room Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-lime-200 to-lime-300 rounded-lg flex items-center justify-center">
-                  <Users className="w-4 h-4 text-lime-700" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-800">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-stone-100 border border-stone-300 rounded-lg">
+                    <Users className="w-4 h-4 text-stone-700" />
+                  </div>
+                  <h3 className="text-lg font-medium text-stone-900">
                     Join Existing Room
                   </h3>
-                  <p className="text-gray-600 text-sm">
-                    Enter a room ID to join
-                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="joinId"
+                      className="block text-xs uppercase tracking-wide font-medium text-stone-700 mb-2"
+                    >
+                      Room ID
+                    </label>
+                    <input
+                      id="joinId"
+                      type="text"
+                      value={joinId}
+                      onChange={(e) => setJoinId(e.target.value)}
+                      placeholder="Paste room ID"
+                      className="w-full px-4 py-3 bg-stone-50 border border-stone-300 
+                               text-stone-900 rounded-lg placeholder-stone-400
+                               focus:ring-2 focus:ring-stone-400 focus:border-transparent
+                               transition-all duration-200 outline-none"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter" && joinId.trim()) {
+                          handleJoin();
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleJoin}
+                    disabled={!joinId.trim()}
+                    className="w-full py-3 bg-white border-2 border-stone-900 
+                             hover:bg-stone-900 hover:text-white
+                             disabled:border-stone-300 disabled:text-stone-400
+                             disabled:cursor-not-allowed
+                             text-stone-900 font-medium rounded-lg 
+                             transition-all duration-200 
+                             focus:ring-2 focus:ring-stone-400 outline-none
+                             flex items-center justify-center gap-2"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                    <span>Join Room</span>
+                  </button>
                 </div>
               </div>
-
-              <div>
-                <label
-                  htmlFor="joinId"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Room ID
-                </label>
-                <input
-                  id="joinId"
-                  type="text"
-                  value={joinId}
-                  onChange={(e) => setJoinId(e.target.value)}
-                  placeholder="Paste room ID here..."
-                  className="w-full px-4 py-3 bg-white/70 border border-gray-300/50 
-                           text-gray-800 rounded-xl placeholder-gray-500
-                           focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50
-                           transition-all duration-200 outline-none backdrop-blur-sm"
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter" && joinId.trim()) {
-                      handleJoin();
-                    }
-                  }}
-                />
-              </div>
-
-              <button
-                onClick={handleJoin}
-                disabled={!joinId.trim()}
-                className="w-full py-3 bg-gradient-to-r from-lime-600 to-green-600 
-                         hover:from-lime-500 hover:to-green-500 
-                         disabled:from-gray-400 disabled:to-gray-500
-                         disabled:cursor-not-allowed
-                         text-white font-medium rounded-xl 
-                         transition-all duration-200 
-                         focus:ring-2 focus:ring-lime-400/50 outline-none
-                         flex items-center justify-center gap-2
-                         shadow-lg hover:shadow-xl"
-              >
-                <ArrowRight className="w-4 h-4" />
-                Join Room
-              </button>
             </div>
           </div>
         ) : (
           /* Room Created Success */
-          <div className="bg-white/80 backdrop-blur-md border border-gray-200/50 rounded-2xl p-6 shadow-2xl">
+          <div className="bg-white border border-stone-200 rounded-2xl p-8 shadow-lg">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-lime-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-green-700" />
+              <div className="w-16 h-16 bg-stone-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2 tracking-tight">
-                Room Created Successfully!
+              <h2 className="text-2xl font-light text-stone-900 mb-2">
+                Room Created
               </h2>
-              <p className="text-gray-600">
-                Your collaborative canvas is ready
+              <p className="text-stone-600 text-sm">
+                Share the ID to invite collaborators
               </p>
             </div>
 
             {/* Room Info */}
-            <div className="bg-gray-100/60 rounded-xl p-4 mb-6 border border-gray-200/30 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">
+            <div className="bg-stone-50 rounded-xl p-4 mb-6 border border-stone-200 space-y-3">
+              <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                <span className="text-xs uppercase tracking-wide font-medium text-stone-600">
                   Room Name
                 </span>
-                <span className="text-gray-800 font-medium">{roomName}</span>
+                <span className="text-stone-900 font-medium">{roomName}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-xs uppercase tracking-wide font-medium text-stone-600">
                   Room ID
                 </span>
                 <div className="flex items-center gap-2">
-                  <code className="bg-white/80 px-2 py-1 rounded text-gray-800 text-sm font-mono border border-gray-200/50">
+                  <code className="bg-white px-3 py-1.5 rounded text-stone-900 text-sm font-mono border border-stone-200">
                     {roomId}
                   </code>
                   <button
                     onClick={handleCopyRoomId}
-                    className="p-1 hover:bg-gray-200/50 rounded transition-colors"
+                    className="p-2 hover:bg-stone-200 rounded-lg transition-colors"
                     title="Copy Room ID"
                   >
                     {copied ? (
-                      <Check className="w-4 h-4 text-green-600" />
+                      <Check className="w-4 h-4 text-stone-900" />
                     ) : (
-                      <Copy className="w-4 h-4 text-gray-600 hover:text-gray-800" />
+                      <Copy className="w-4 h-4 text-stone-600" />
                     )}
                   </button>
                 </div>
@@ -290,40 +297,38 @@ export default function CreateJoinRoom() {
             <div className="space-y-3">
               <button
                 onClick={handleStartDrawing}
-                className="w-full py-3 bg-gradient-to-r from-stone-600 to-gray-700 
-                         hover:from-stone-500 hover:to-gray-600 
-                         text-white font-medium rounded-xl 
+                className="w-full py-3 bg-stone-900 hover:bg-stone-800
+                         text-white font-medium rounded-lg 
                          transition-all duration-200 
-                         focus:ring-2 focus:ring-stone-400/50 outline-none
-                         flex items-center justify-center gap-2
-                         shadow-lg hover:shadow-xl"
+                         focus:ring-2 focus:ring-stone-400 outline-none
+                         flex items-center justify-center gap-2 shadow-lg"
               >
                 <ArrowRight className="w-4 h-4" />
-                Start Drawing
+                <span>Start Drawing</span>
               </button>
 
               {/* Share Info */}
-              <div className="bg-blue-100/80 border border-blue-300/50 rounded-xl p-3 backdrop-blur-sm">
-                <p className="text-blue-800 text-sm text-center">
-                  Share the Room ID with others to invite them to collaborate
+              <div className="bg-stone-100 border border-stone-200 rounded-lg p-3">
+                <p className="text-stone-700 text-xs text-center">
+                  Share the Room ID with others to invite them
                 </p>
               </div>
 
               {/* Join Another Room */}
-              <div className="pt-4 border-t border-gray-300/30">
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-gray-700 text-center">
-                    Or join another room
-                  </h3>
+              <div className="pt-4 border-t border-stone-200">
+                <p className="text-xs uppercase tracking-wide font-medium text-stone-600 text-center mb-3">
+                  Join Another Room
+                </p>
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={joinId}
                     onChange={(e) => setJoinId(e.target.value)}
-                    placeholder="Enter room ID to join..."
-                    className="w-full px-4 py-2.5 bg-white/70 border border-gray-300/50 
-                             text-gray-800 rounded-lg placeholder-gray-500
-                             focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50
-                             transition-all duration-200 outline-none text-sm backdrop-blur-sm"
+                    placeholder="Enter room ID"
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-300 
+                             text-stone-900 rounded-lg placeholder-stone-400 text-sm
+                             focus:ring-2 focus:ring-stone-400 focus:border-transparent
+                             transition-all duration-200 outline-none"
                     onKeyPress={(e) => {
                       if (e.key === "Enter" && joinId.trim()) {
                         handleJoin();
@@ -333,17 +338,17 @@ export default function CreateJoinRoom() {
                   <button
                     onClick={handleJoin}
                     disabled={!joinId.trim()}
-                    className="w-full py-2.5 bg-gradient-to-r from-lime-600 to-green-600 
-                             hover:from-lime-500 hover:to-green-500 
-                             disabled:from-gray-400 disabled:to-gray-500
+                    className="w-full py-2.5 bg-white border-2 border-stone-900
+                             hover:bg-stone-900 hover:text-white
+                             disabled:border-stone-300 disabled:text-stone-400
                              disabled:cursor-not-allowed
-                             text-white font-medium rounded-lg 
+                             text-stone-900 font-medium rounded-lg 
                              transition-all duration-200 
-                             focus:ring-2 focus:ring-lime-400/50 outline-none
+                             focus:ring-2 focus:ring-stone-400 outline-none
                              flex items-center justify-center gap-2 text-sm"
                   >
                     <Users className="w-4 h-4" />
-                    Join Room
+                    <span>Join</span>
                   </button>
                 </div>
               </div>
@@ -353,8 +358,8 @@ export default function CreateJoinRoom() {
 
         {/* Footer */}
         <div className="text-center mt-6">
-          <p className="text-gray-500 text-xs">
-            Real-time collaborative drawing • Share ideas visually
+          <p className="text-stone-500 text-xs">
+            Real-time collaborative drawing
           </p>
         </div>
       </div>
