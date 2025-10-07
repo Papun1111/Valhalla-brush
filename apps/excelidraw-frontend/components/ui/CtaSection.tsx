@@ -1,65 +1,101 @@
 import { Button } from "@repo/ui/button";
 import Link from "next/link";
 import { FC } from "react";
-import { FiEdit2, FiUsers } from "react-icons/fi";
+import { FiEdit2, FiUsers, FiArrowRight } from "react-icons/fi";
 
 interface CtaSectionProps {
   isLoggedIn: boolean;
 }
 
 export const CtaSection: FC<CtaSectionProps> = ({ isLoggedIn }) => (
-  <section className="relative z-10 py-32">
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="relative bg-gradient-to-r from-stone-600/20 to-red-600/20 rounded-3xl p-12 sm:p-20 shadow-2xl border border-lime-500/20 backdrop-blur-sm hover:border-lime-500/40 transition-all duration-500 group">
-        <div className="absolute inset-0 bg-gradient-to-r from-lime-600/10 to-red-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div className="relative text-center">
-          <h2 className="text-5xl font-black text-stone-800 mb-6 group-hover:scale-105 transition-transform duration-500">
-            Ready to start creating?
-          </h2>
-          <p className="mt-6 text-xl text-stone-600 mx-auto max-w-2xl leading-relaxed">
-            Join thousands of creators, designers, and teams who are already
-            bringing their ideas to life with ValhallaBrush. Start your creative
-            journey today.
-          </p>
-          <div className="mt-12 flex items-center justify-center gap-x-8 flex-wrap">
+  <section className="relative py-24 bg-white">
+    <div className="container mx-auto px-6 lg:px-12 max-w-7xl">
+      <div className="relative bg-stone-900 rounded-3xl overflow-hidden shadow-2xl">
+        {/* Background decoration */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full filter blur-3xl"></div>
+        
+        {/* Content */}
+        <div className="relative px-8 py-16 lg:p-20">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-4xl lg:text-5xl font-light text-white mb-6 leading-tight">
+              Ready to start<br />
+              <span className="font-serif italic">creating</span>?
+            </h2>
+            
+            <p className="text-lg text-stone-300 leading-relaxed mb-12 max-w-2xl mx-auto">
+              Join thousands of creators, designers, and teams who are already
+              bringing their ideas to life with ValhallaBrush.
+            </p>
+            
             {isLoggedIn ? (
-              <>
+              <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Link href="/canvas">
                   <Button
                     size="lg"
-                    variant="ghost"
-                    className="h-16 px-12 bg-gradient-to-r from-stone-800 to-stone-900 text-white border-2 border-stone-600 hover:from-stone-700 hover:to-stone-800 hover:border-lime-500 transform hover:scale-110 hover:-translate-y-2 transition-all duration-300 shadow-2xl hover:shadow-lime-500/25 group"
+                    className="h-14 px-12 bg-white text-stone-900 hover:bg-stone-100 rounded-full font-medium tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
                   >
-                    <span className="font-bold text-lg">Open Canvas</span>
-                    <FiEdit2 className="ml-3 h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+                    <span>Open Canvas</span>
+                    <FiEdit2 className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
                   </Button>
                 </Link>
                 <Link href="/slug">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="h-16 px-12 border-2 border-red-500 text-red-600 hover:bg-red-500 hover:text-white hover:border-red-400 transition-all duration-300 transform hover:scale-110 hover:-translate-y-2 shadow-2xl hover:shadow-red-500/25 group"
+                    className="h-14 px-12 border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-full font-medium tracking-wide transition-all duration-300 group"
                   >
-                    <span className="font-bold text-lg">Join Room</span>
-                    <FiUsers className="ml-3 h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+                    <span>Join Room</span>
+                    <FiUsers className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
                   </Button>
                 </Link>
-              </>
+              </div>
             ) : (
-              <div className="text-center">
-                <p className="text-xl text-lime-600 mb-6 animate-pulse">
-                  Please sign in to access the canvas and join collaborative
-                  rooms
-                </p>
-                <div className="flex gap-4 justify-center">
+              <div className="space-y-6">
+                <div className="flex items-center justify-center gap-2 text-stone-400 text-sm">
+                  <div className="w-2 h-2 bg-stone-500 rounded-full"></div>
+                  <span>Sign in to access the canvas and collaborative rooms</span>
+                </div>
+                <div className="flex gap-4 justify-center flex-wrap">
+                  <Link href="/signup">
+                    <Button 
+                      size="lg"
+                      className="h-14 px-12 bg-white text-stone-900 hover:bg-stone-100 rounded-full font-medium tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+                    >
+                      <span>Get Started</span>
+                      <FiArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    </Button>
+                  </Link>
                   <Link href="/signin">
-                    <Button className="h-14 px-8 bg-gradient-to-r from-lime-600 to-red-600 hover:from-lime-500 hover:to-red-500 transform hover:scale-110 transition-all duration-300">
-                      Get Started Now
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="h-14 px-12 border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-full font-medium tracking-wide transition-all duration-300"
+                    >
+                      Sign In
                     </Button>
                   </Link>
                 </div>
               </div>
             )}
+          </div>
+          
+          {/* Stats bar */}
+          <div className="mt-16 pt-12 border-t border-white/10">
+            <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto text-center">
+              <div>
+                <div className="text-3xl font-light text-white mb-2">50K+</div>
+                <div className="text-sm text-stone-400 tracking-wide">Active Users</div>
+              </div>
+              <div>
+                <div className="text-3xl font-light text-white mb-2">1M+</div>
+                <div className="text-sm text-stone-400 tracking-wide">Drawings</div>
+              </div>
+              <div>
+                <div className="text-3xl font-light text-white mb-2">150+</div>
+                <div className="text-sm text-stone-400 tracking-wide">Countries</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

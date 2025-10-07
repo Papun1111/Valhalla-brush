@@ -2,20 +2,28 @@ import { FC } from "react";
 import type{ Feature } from "@/utils/interfaces";
 
 export const FeatureCard: FC<Feature> = ({ icon: Icon, title, desc, color, hoverColor }) => (
-  <div className="group p-8 bg-stone-900/50 border border-stone-800 rounded-3xl shadow-2xl hover:shadow-lime-500/10 transform hover:-translate-y-3 hover:scale-105 transition-all duration-500 backdrop-blur-sm hover:border-lime-500/30 animate-fade-in-up">
-    <div className="flex items-center gap-4 mb-6">
-      <div className={`p-4 rounded-2xl bg-gradient-to-br ${color} ${hoverColor} transition-all duration-500 transform group-hover:scale-110 group-hover:rotate-3`}>
-        <Icon className="h-7 w-7 text-white group-hover:scale-110 transition-transform duration-300" />
+  <div className="group p-8 bg-white border border-stone-200 rounded-2xl shadow-sm hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:border-stone-300">
+    <div className="mb-6">
+      <div className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${color} ${hoverColor} transition-all duration-300 transform group-hover:scale-105`}>
+        <Icon className="h-6 w-6 text-white transition-transform duration-300" />
       </div>
-      <h3 className="text-2xl font-bold text-stone-800 group-hover:text-lime-600 transition-colors duration-300">
-        {title}
-      </h3>
     </div>
-    <div className="bg-gradient-to-r from-slate-200 via-amber-200 to-gray-900 bg-clip-text text-transparent leading-relaxed group-hover:text-gray-200 transition-colors duration-300">
+    
+    <h3 className="text-xl font-light text-stone-900 mb-3 transition-colors duration-300">
+      {title}
+    </h3>
+    
+    <p className="text-stone-600 leading-relaxed text-sm transition-colors duration-300 group-hover:text-stone-700">
       {desc}
-    </div>
-    <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      <div className="h-1 w-0 group-hover:w-full bg-gradient-to-r from-lime-500 to-red-500 rounded-full transition-all duration-500"></div>
+    </p>
+    
+    <div className="mt-6 pt-6 border-t border-stone-100 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+      <div className="flex items-center text-stone-700 text-sm font-medium">
+        <span>Learn more</span>
+        <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
     </div>
   </div>
 );

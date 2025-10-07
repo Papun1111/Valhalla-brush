@@ -1,99 +1,161 @@
 import {FC} from "react"
 import type { HeroSectionProps } from "@/utils/interfaces";
 import { Button } from "@repo/ui/button";
-import { FiEdit2, FiLogOut, FiZap } from "react-icons/fi";
+import { FiEdit2, FiLogOut } from "react-icons/fi";
 import Link from "next/link";
 
 export const HeroSection: FC<HeroSectionProps> = ({ isLoggedIn, handleLogout }) => (
-  <header className="relative z-10 overflow-hidden py-24">
-    <div className="absolute inset-0 opacity-30">
-      <div className="bg-gradient-to-r from-stone-300/20 via-lime-100/20 to-red-200/20 w-96 h-96 rounded-full filter blur-3xl mx-auto mt-[-12rem] animate-bounce-slow"></div>
+  <header className="relative overflow-hidden py-32 bg-gradient-to-b from-stone-100 via-stone-50 to-white">
+    {/* Subtle background element */}
+    <div className="absolute inset-0 opacity-20">
+      <div className="bg-gradient-to-br from-stone-200/30 via-transparent to-stone-300/20 w-[800px] h-[800px] rounded-full filter blur-3xl absolute top-0 right-0 -translate-y-1/2"></div>
     </div>
-    <div className="relative container mx-auto px-4 text-center">
-      <div className="animate-fade-in-up">
-        <h1 className="text-6xl font-black sm:text-8xl bg-clip-text text-transparent bg-gradient-to-r from-stone-800 via-lime-700 to-red-800 tracking-tight hover:scale-105 transition-transform duration-700 cursor-default">
-          VALHALLA BRUSH
-        </h1>
-        <div className="h-1 w-32 bg-gradient-to-r from-lime-500 to-red-500 mx-auto mt-4 rounded-full animate-pulse"></div>
-      </div>
+    
+    <div className="relative container mx-auto px-6 lg:px-12 max-w-7xl">
+      <div className="grid lg:grid-cols-2 gap-16 items-center">
+        {/* Left Content */}
+        <div className="space-y-8">
+          <div className="inline-block">
+            <div className="flex items-center gap-2 text-sm text-stone-600 tracking-wide mb-6">
+              <div className="w-8 h-px bg-stone-400"></div>
+              <span className="uppercase">Premium Digital Canvas</span>
+            </div>
+          </div>
 
-      <p className="mt-8 text-xl sm:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:300ms]">
-        The ultimate collaborative drawing platform where creativity meets
-        technology. Design, sketch, and brainstorm with your team in real-time.
-        Experience the future of digital creativity.
-      </p>
+          <div className="space-y-6">
+            <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight text-stone-900 leading-[0.95]">
+              THE
+              <br />
+              <span className="font-serif italic text-stone-800">Valhalla</span>
+              <br />
+              BRUSH<sup className="text-3xl">®</sup>
+            </h1>
+            
+            <div className="flex items-center gap-3 text-stone-700">
+              <span className="text-lg">/</span>
+              <p className="text-lg font-light tracking-wide">
+                We craft collaborative experiences
+              </p>
+              <span className="text-lg">/</span>
+            </div>
+          </div>
 
-      <div className="mt-12 flex items-center justify-center gap-x-6 animate-fade-in-up [animation-delay:600ms]">
-        {isLoggedIn ? (
-          <Button
-            onClick={handleLogout}
-            variant="ghost"
-            size="lg"
-            className="h-14 px-10 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-2xl transform hover:scale-110 hover:-translate-y-1 transition-all duration-300 border border-red-500/50 hover:border-red-400 hover:shadow-red-500/25"
-          >
-            <span className="font-semibold">Logout</span>
-            <FiLogOut className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-          </Button>
-        ) : (
-          <>
-            <Link href="/signin">
-              <Button
-                variant="ghost"
-                size="lg"
-                className="h-14 px-10 border-2 border-stone-600 text-stone-700 hover:bg-stone-800 hover:text-white hover:border-stone-800 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 shadow-xl hover:shadow-2xl group"
-              >
-                <span className="font-semibold">Sign In</span>
-                <FiEdit2 className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-1000" />
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button
-                variant="ghost"
-                size="lg"
-                className="h-14 px-10 border-2 border-lime-600 text-lime-700 hover:bg-lime-700 hover:text-white hover:border-lime-700 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 shadow-xl hover:shadow-2xl group"
-              >
-                <span className="font-semibold">Sign Up</span>
-                <FiZap className="ml-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-              </Button>
-            </Link>
-          </>
-        )}
-      </div>
+          <div className="pt-4">
+            {isLoggedIn ? (
+              <div className="space-y-4">
+                <Button
+                  onClick={handleLogout}
+                  className="h-14 px-12 bg-stone-900 hover:bg-stone-800 text-white rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <span className="font-medium tracking-wide">Logout</span>
+                  <FiLogOut className="ml-3 h-5 w-5" />
+                </Button>
+                <div className="flex items-center gap-2 text-sm text-stone-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>Active session</span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <Link href="/signup">
+                  <Button
+                    className="h-14 px-12 bg-stone-900 hover:bg-stone-800 text-white rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <span className="font-medium tracking-wide">START</span>
+                  </Button>
+                </Link>
+                <Link href="/signin">
+                  <Button
+                    variant="ghost"
+                    className="h-14 px-8 text-stone-700 hover:text-stone-900 hover:bg-stone-100 rounded-full transition-all duration-300"
+                  >
+                    <span className="font-medium tracking-wide">Sign In</span>
+                    <FiEdit2 className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
 
-      {isLoggedIn && (
-        <div className="mt-8 animate-fade-in">
-          <div className="inline-flex items-center px-6 py-3 bg-lime-500/10 border border-lime-500/30 rounded-full">
-            <div className="w-2 h-2 bg-lime-400 rounded-full animate-pulse mr-3"></div>
-            <p className="text-lime-600 font-medium">
-              You are logged in and ready to create
+        {/* Right Content - Feature Card */}
+        <div className="relative lg:pl-12">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border border-stone-200 hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2">
+            {/* Category Pills */}
+            <div className="flex items-center gap-2 mb-6">
+              <span className="px-4 py-2 bg-stone-100 text-stone-700 rounded-full text-sm font-medium border border-stone-200">
+                Real-time
+              </span>
+              <span className="px-4 py-2 bg-stone-100 text-stone-700 rounded-full text-sm font-medium border border-stone-200">
+                Canvas
+              </span>
+              <span className="px-4 py-2 bg-stone-900 text-white rounded-full text-sm font-medium">
+                Collaborate
+              </span>
+            </div>
+
+            <h3 className="text-3xl font-light text-stone-900 mb-4">
+              Unique design &<br />ergonomics
+            </h3>
+            
+            <p className="text-stone-600 mb-8 leading-relaxed">
+              From concepts to masterpieces. Experience seamless collaboration with your team in real-time.
             </p>
-          </div>
-        </div>
-      )}
 
-      <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 animate-fade-in-up [animation-delay:900ms]">
-        <div className="text-center group hover:scale-105 transition-transform duration-300">
-          <div className="text-3xl font-bold text-stone-800 group-hover:text-stone-600 transition-colors duration-300">
-            50K+
+            {/* Feature Preview */}
+            <div className="relative bg-gradient-to-br from-stone-50 to-stone-100 rounded-2xl p-8 border border-stone-200">
+              <div className="absolute top-4 right-4 bg-white rounded-lg px-4 py-2 shadow-md flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-xs font-medium text-stone-700">LIVE</span>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-stone-800 to-stone-600 rounded-full"></div>
+                  <div className="flex-1 h-3 bg-stone-300 rounded-full"></div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-lime-600 to-lime-500 rounded-full"></div>
+                  <div className="flex-1 h-3 bg-stone-300 rounded-full"></div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-500 rounded-full"></div>
+                  <div className="flex-1 h-3 bg-stone-300 rounded-full"></div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="text-stone-600 group-hover:text-stone-500 transition-colors duration-300">
-            Active Users
+
+          {/* Floating Stats */}
+          <div className="absolute -bottom-6 left-0 bg-stone-900 text-white rounded-2xl px-8 py-4 shadow-2xl">
+            <div className="flex items-center gap-6">
+              <div className="flex -space-x-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-lime-400 to-lime-600 rounded-full border-2 border-stone-900"></div>
+                <div className="w-10 h-10 bg-gradient-to-br from-red-400 to-red-600 rounded-full border-2 border-stone-900"></div>
+              </div>
+              <div>
+                <div className="text-2xl font-light">50k+</div>
+                <div className="text-xs text-stone-400 tracking-wide">Active Users</div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="text-center group hover:scale-105 transition-transform duration-300">
-          <div className="text-3xl font-bold text-lime-700 group-hover:text-lime-600 transition-colors duration-300">
-            1M+
+      </div>
+
+      {/* Bottom Stats Bar */}
+      <div className="mt-24 pt-12 border-t border-stone-200">
+        <div className="grid grid-cols-3 gap-8 max-w-4xl">
+          <div className="text-center space-y-2">
+            <div className="text-4xl font-light text-stone-900">1M+</div>
+            <div className="text-sm text-stone-600 tracking-wide">Drawings Created</div>
           </div>
-          <div className="text-stone-600 group-hover:text-stone-500 transition-colors duration-300">
-            Drawings Created
+          <div className="text-center space-y-2">
+            <div className="text-4xl font-light text-stone-900">99.9%</div>
+            <div className="text-sm text-stone-600 tracking-wide">Uptime Guarantee</div>
           </div>
-        </div>
-        <div className="text-center group hover:scale-105 transition-transform duration-300">
-          <div className="text-3xl font-bold text-red-600 group-hover:text-red-500 transition-colors duration-300">
-            99.9%
-          </div>
-          <div className="text-stone-600 group-hover:text-stone-500 transition-colors duration-300">
-            Uptime
+          <div className="text-center space-y-2">
+            <div className="text-4xl font-light text-stone-900">24/7</div>
+            <div className="text-sm text-stone-600 tracking-wide">Support Available</div>
           </div>
         </div>
       </div>
