@@ -1,5 +1,4 @@
-# .github/workflows/deploy-to-staging.yml
-name: Deploy to staging
+name: Deploy to Pagesmith (DigitalOcean)
 
 on:
   push:
@@ -7,23 +6,46 @@ on:
       - main
 
 jobs:
-  redeploy_everything:
-    name: Deploying everything to staging cluster
+  deploy_pagesmith:
+    name: Deploy Pagesmith to DigitalOcean
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH into server and deploy
+      - name: SSH into DigitalOcean and deploy
         run: |
-          # write the private key to a file and secure it
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
+          # Save the private key from GitHub secrets
+          echo "${{ secrets.SSH_PRIVATE_KEY_DO }}" > ssh_key
           chmod 600 ssh_key
 
-          # SSH and run your deployment commands
-          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@51.21.221.51 << 'EOF'
-            cd Valhalla-brush/ && git pull
+          # SSH into DigitalOcean droplet and run deployment
+          ssh -o StrictHostKeyChecking=no -i ssh_key root@134.209.144.86 << 'EOF'
+            set -e
+
+            # Update system package info
+            apt update -y
+
+            # Install Node.js 20 (Ubuntu 24.04 ships with it via NodeSource or Snap)
+            if ! command -v node >/dev/null; then
+              curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+              apt install -y nodejs
+            fi
+
+            # Install pnpm (via corepack)
+            if ! command -v pnpm >/dev/null; then
+              corepack enable
+              corepack prepare pnpm@latest --activate
+            fi
+
+            # Install pm2 globally
+            if ! command -v pm2 >/dev/null; then
+              npm install -g pm2
+            fi
+
+            # Go to project and deploy
+            cd Pagesmith && git pull origin main
             pnpm install
             pnpm run build
-            pm2 restart http-backend
-            pm2 restart ws-backend
-            pm2 restart excalidraw-frontend
+
+            # Restart or start PM2 processes
+            pm2 restart all
           EOF
