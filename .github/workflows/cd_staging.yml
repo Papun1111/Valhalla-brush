@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy_pagesmith:
-    name: Deploy Pagesmith to DigitalOcean
+    name: Deploy Valhalla-Brush to DigitalOcean
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +42,7 @@ jobs:
             fi
 
             # Go to project and deploy
-            cd Pagesmith && git pull origin main
+            cd Valhalla-brush git pull origin main
             pnpm install
             pnpm run build
 
