@@ -12,6 +12,8 @@ import {
   X,
   Info,
   Download,
+  Grid3X3,
+  Palette,
 } from "lucide-react";
 import { Game } from "@/draw/Game";
 import { PDFExporter, ExportOptions } from "@/utils/pdfExport";
@@ -27,18 +29,21 @@ export type Tool =
   | "text";
 
 const COLORS = [
-  "#FFFFFF", // White
-  "#FF0000", // Red
-  "#00FF00", // Green
-  "#0000FF", // Blue
-  "#FFFF00", // Yellow
-  "#FF00FF", // Magenta
-  "#00FFFF", // Cyan
-  "#FFA500", // Orange
-  "#800080", // Purple
-  "#000000", // Black
-  "#808080", // Gray
-  "#FFC0CB", // Pink
+  "#000000", // Black (First for aesthetic default)
+  "#343a40", // Dark Gray
+  "#495057", // Gray
+  "#c92a2a", // Red
+  "#a61e4d", // Pink
+  "#862e9c", // Grape
+  "#5f3dc4", // Violet
+  "#364fc7", // Indigo
+  "#1864ab", // Blue
+  "#0b7285", // Cyan
+  "#087f5b", // Teal
+  "#2b8a3e", // Green
+  "#5c940d", // Lime
+  "#e67700", // Orange
+  "#d9480f", // Orange Red
 ];
 
 export function Canvas({
@@ -171,7 +176,6 @@ export function Canvas({
       });
     } catch (error) {
       console.error("Export failed:", error);
-      // You could add a toast notification here
     } finally {
       setIsExporting(false);
       setShowExportModal(false);
@@ -179,12 +183,25 @@ export function Canvas({
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-gradient-to-r from-red-300 via-rose-600 to-red-900 font-sans">
+    <div className="relative h-screen w-full overflow-hidden bg-[#f8f9fa] font-sans text-slate-900 selection:bg-purple-100">
+      {/* Grid Background */}
+      {showGrid && (
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div
+            className="w-full h-full opacity-[0.08]"
+            style={{
+              backgroundImage: `radial-gradient(#000 1px, transparent 1px)`,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+      )}
+
       <canvas
         ref={canvasRef}
         width={canvasSize.width}
         height={canvasSize.height}
-        className="absolute inset-0 cursor-crosshair touch-none"
+        className="absolute inset-0 cursor-crosshair touch-none z-10"
         style={{
           cursor:
             selectedTool === "eraser"
@@ -195,6 +212,7 @@ export function Canvas({
         }}
       />
 
+      {/* Top Navigation Bar */}
       <Topbar
         setSelectedTool={setSelectedTool}
         selectedTool={selectedTool}
@@ -207,6 +225,7 @@ export function Canvas({
         onExport={() => setShowExportModal(true)}
       />
 
+      {/* Floating Settings Panel (Left Side like Properties) */}
       {showSettings && (
         <ColorPicker
           selectedColor={selectedColor}
@@ -222,6 +241,7 @@ export function Canvas({
         />
       )}
 
+      {/* Floating Instructions Panel (Right Side) */}
       {showInstructions && (
         <InstructionsPanel
           setShowInstructions={setShowInstructions}
@@ -237,22 +257,13 @@ export function Canvas({
         />
       )}
 
+      {/* Bottom Toast for Text Tool */}
       {selectedTool === "text" && <TextInstructions />}
 
-      {showGrid && (
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px)
-              `,
-              backgroundSize: "20px 20px",
-            }}
-          />
-        </div>
-      )}
+      {/* Branding/Watermark (Optional aesthetic touch) */}
+      <div className="fixed bottom-4 right-4 z-0 pointer-events-none opacity-30 select-none">
+        <span className="font-handwriting text-sm font-bold">Valhalla Canvas</span>
+      </div>
     </div>
   );
 }
@@ -281,118 +292,113 @@ function Topbar({
     {
       id: "pencil",
       icon: Pencil,
-      label: "Pencil (P)",
-      description: "Draw freehand",
+      label: "Draw",
+      shortcut: "P",
     },
     {
       id: "rect",
       icon: Square,
-      label: "Rectangle (R)",
-      description: "Draw rectangles",
+      label: "Rectangle",
+      shortcut: "R",
     },
     {
       id: "circle",
       icon: Circle,
-      label: "Circle (C)",
-      description: "Draw circles",
+      label: "Circle",
+      shortcut: "C",
     },
     {
       id: "triangle",
       icon: Triangle,
-      label: "Triangle (T)",
-      description: "Draw triangles",
+      label: "Triangle",
+      shortcut: "T",
     },
     {
       id: "line",
       icon: Minus,
-      label: "Line (L)",
-      description: "Draw straight lines",
+      label: "Line",
+      shortcut: "L",
+    },
+    {
+      id: "text",
+      icon: TextIcon,
+      label: "Text",
+      shortcut: "X",
     },
     {
       id: "eraser",
       icon: Eraser,
-      label: "Eraser (E)",
-      description: "Erase drawings",
+      label: "Eraser",
+      shortcut: "E",
     },
-    { id: "text", icon: TextIcon, label: "Text (X)", description: "Add text" },
   ];
 
   return (
-    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-30">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-30">
       <div
-        className="flex flex-wrap items-center gap-1 
-                      bg-white/95 backdrop-blur-sm border border-white/30 
-                      rounded-xl p-1 shadow-lg
-                      animate-in slide-in-from-top-2 duration-300"
+        className="flex items-center gap-3 
+                      bg-white shadow-[0_2px_10px_rgba(0,0,0,0.08)] border border-gray-200 
+                      rounded-xl p-1.5
+                      animate-in slide-in-from-top-4 duration-300"
       >
-        <div className="flex items-center gap-0">
+        {/* Tools Section */}
+        <div className="flex items-center gap-1 px-1">
           {tools.map((tool) => {
             const IconComponent = tool.icon;
+            const isActive = selectedTool === tool.id;
+            
             return (
               <div key={tool.id} className="relative group">
                 <IconButton
                   onClick={() => setSelectedTool(tool.id as Tool)}
-                  activated={selectedTool === tool.id}
-                  icon={<IconComponent className="w-5 h-5" />}
+                  activated={isActive}
+                  icon={<IconComponent className="w-4 h-4" />}
                   customStyle={{
-                    backgroundColor:
-                      selectedTool === tool.id
-                        ? tool.id === "eraser"
-                          ? "rgba(220, 38, 38, 1)"
-                          : tool.id === "text"
-                            ? "rgba(34, 197, 94, 1)"
-                            : "rgba(59, 130, 246, 1)"
-                        : "transparent",
-                    color: selectedTool === tool.id ? "white" : "#6B7280",
+                    backgroundColor: isActive ? "#e0e7ff" : "transparent", // Soft indigo for active
+                    color: isActive ? "#4338ca" : "#4b5563", // Indigo-700 vs Gray-600
                     borderRadius: "8px",
-                    padding: "10px",
-                    transition: "all 0.2s ease",
+                    padding: "8px",
                     border: "none",
-                    width: "44px",
-                    height: "44px",
+                    width: "36px",
+                    height: "36px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    boxShadow: isActive ? "inset 0 0 0 1px #c7d2fe" : "none",
                   }}
                 />
+                {/* Tooltip */}
                 <div
-                  className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 
-                              bg-gray-900 text-white text-xs px-2 py-1 rounded-md
+                  className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 
+                              bg-gray-900 text-white text-[10px] px-2 py-1 rounded
                               opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                              pointer-events-none whitespace-nowrap z-10"
+                              pointer-events-none whitespace-nowrap z-50 tracking-wide shadow-xl"
                 >
-                  <div className="font-medium">{tool.label}</div>
-                  <div className="text-gray-300">{tool.description}</div>
-                  <div
-                    className="absolute -top-1 left-1/2 transform -translate-x-1/2 
-                                w-0 h-0 border-l-2 border-r-2 border-b-2 
-                                border-l-transparent border-r-transparent border-b-gray-900"
-                  ></div>
+                   {tool.label} <span className="opacity-60 ml-1">({tool.shortcut})</span>
                 </div>
               </div>
             );
           })}
         </div>
 
-        <div className="w-px h-8 bg-gray-300 mx-1" />
+        <div className="w-px h-6 bg-gray-200" />
 
-        <div className="flex items-center gap-0">
+        {/* Actions Section */}
+        <div className="flex items-center gap-1 px-1">
+          {/* Settings Toggle */}
           <div className="relative group">
             <IconButton
               onClick={() => setShowSettings(!showSettings)}
               activated={showSettings}
-              icon={<Settings className="w-5 h-5" />}
+              icon={<Settings className="w-4 h-4" />}
               customStyle={{
-                backgroundColor: showSettings
-                  ? "rgba(147, 51, 234, 1)"
-                  : "transparent",
-                color: showSettings ? "white" : "#6B7280",
+                backgroundColor: showSettings ? "#f3e8ff" : "transparent",
+                color: showSettings ? "#7e22ce" : "#4b5563",
                 borderRadius: "8px",
-                padding: "10px",
-                transition: "all 0.2s ease",
+                padding: "8px",
                 border: "none",
-                width: "44px",
-                height: "44px",
+                width: "36px",
+                height: "36px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -401,80 +407,55 @@ function Topbar({
             >
               <div
                 className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 
-                          w-4 h-1 rounded-full border border-gray-200"
-                style={{
-                  backgroundColor: selectedColor,
-                }}
+                          w-1 h-1 rounded-full"
+                style={{ backgroundColor: selectedColor }}
               />
             </IconButton>
-            <div
-              className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 
-                          bg-gray-900 text-white text-xs px-2 py-1 rounded-md
-                          opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                          pointer-events-none whitespace-nowrap z-10"
-            >
-              Settings (Ctrl+S)
-            </div>
+            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none z-50">Properties</div>
           </div>
 
+          {/* Instructions */}
           <div className="relative group">
             <IconButton
               onClick={() => setShowInstructions(!showInstructions)}
               activated={showInstructions}
-              icon={<Info className="w-5 h-5" />}
+              icon={<Info className="w-4 h-4" />}
               customStyle={{
-                backgroundColor: showInstructions
-                  ? "rgba(6, 182, 212, 1)"
-                  : "transparent",
-                color: showInstructions ? "white" : "#6B7280",
+                backgroundColor: showInstructions ? "#ecfeff" : "transparent",
+                color: showInstructions ? "#0e7490" : "#4b5563",
                 borderRadius: "8px",
-                padding: "10px",
-                transition: "all 0.2s ease",
+                padding: "8px",
                 border: "none",
-                width: "44px",
-                height: "44px",
+                width: "36px",
+                height: "36px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             />
-            <div
-              className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 
-                          bg-gray-900 text-white text-xs px-2 py-1 rounded-md
-                          opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                          pointer-events-none whitespace-nowrap z-10"
-            >
-              Instructions
-            </div>
+             <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none z-50">Help</div>
           </div>
 
+          {/* Export */}
           <div className="relative group">
             <IconButton
               onClick={onExport}
               activated={false}
-              icon={<Download className="w-5 h-5" />}
+              icon={<Download className="w-4 h-4" />}
               customStyle={{
-                backgroundColor: "rgba(34, 197, 94, 1)",
-                color: "white",
+                backgroundColor: "transparent",
+                color: "#4b5563",
                 borderRadius: "8px",
-                padding: "10px",
-                transition: "all 0.2s ease",
+                padding: "8px",
                 border: "none",
-                width: "44px",
-                height: "44px",
+                width: "36px",
+                height: "36px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             />
-            <div
-              className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 
-                          bg-gray-900 text-white text-xs px-2 py-1 rounded-md
-                          opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                          pointer-events-none whitespace-nowrap z-10"
-            >
-              Export to PDF (Ctrl+Shift+S)
-            </div>
+            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none z-50">Export</div>
           </div>
         </div>
       </div>
@@ -508,134 +489,85 @@ function ColorPicker({
   const [customColor, setCustomColor] = useState<string>("#000000");
 
   return (
-    <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40">
+    <div className="fixed top-20 left-4 z-40">
       <div
-        className="bg-white/95 backdrop-blur-sm border border-white/30 
-                      rounded-xl p-4 shadow-lg
-                      animate-in slide-in-from-top-2 duration-300 min-w-[320px]"
+        className="bg-white shadow-[0_5px_20px_rgba(0,0,0,0.1)] border border-gray-200 
+                      rounded-xl p-4
+                      animate-in slide-in-from-left-4 duration-300 w-[240px]"
       >
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-gray-900 font-semibold text-base tracking-tight">
-            Settings
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+          <h3 className="text-gray-900 font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+            <Palette className="w-3 h-3" /> Stroke Properties
           </h3>
           <button
             onClick={() => setShowSettings(false)}
-            className="text-gray-400 hover:text-gray-600 transition-colors duration-200
-                       w-6 h-6 flex items-center justify-center rounded-lg
-                       hover:bg-gray-100"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Color Palette */}
-        <div className="mb-4">
-          <h4 className="text-gray-700 text-sm font-semibold mb-3 tracking-tight">
-            Color Palette
+        <div className="mb-5">
+          <h4 className="text-gray-500 text-[10px] font-bold uppercase mb-2">
+            Stroke Color
           </h4>
-          <div className="grid grid-cols-6 gap-2 mb-3">
+          <div className="flex flex-wrap gap-1.5 mb-3">
             {COLORS.map((color) => (
               <button
                 key={color}
                 onClick={() => setSelectedColor(color)}
-                className={`w-8 h-8 rounded-lg border-2 transition-all duration-200
-                           hover:scale-110 hover:shadow-md
+                className={`w-5 h-5 rounded-full transition-all duration-200
+                           hover:scale-110 relative
                            ${
                              selectedColor === color
-                               ? "border-blue-500 shadow-md scale-110"
-                               : "border-gray-300 hover:border-gray-400"
+                               ? "ring-2 ring-offset-1 ring-gray-900 scale-110 z-10"
+                               : "ring-1 ring-black/5 hover:ring-black/20"
                            }`}
-                style={{
-                  backgroundColor: color,
-                  boxShadow:
-                    selectedColor === color ? `0 0 8px ${color}40` : "none",
-                }}
+                style={{ backgroundColor: color }}
               />
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={customColor}
-              onChange={(e) => setCustomColor(e.target.value)}
-              className="w-8 h-8 rounded-lg border border-gray-300 
-                        cursor-pointer bg-transparent"
-            />
-            <button
-              onClick={() => setSelectedColor(customColor)}
-              className="flex-1 bg-gray-100 hover:bg-gray-200 
-                        text-gray-800 text-sm px-3 py-2 rounded-lg
-                        transition-colors duration-200 border border-gray-200
-                        hover:border-gray-300"
-            >
-              Use Custom Color
-            </button>
-          </div>
-        </div>
-
-        {/* Grid Toggle */}
-        <div className="mb-4 pt-4 border-t border-gray-200">
-          <h4 className="text-gray-700 text-sm font-semibold mb-3 tracking-tight">
-            Canvas Options
-          </h4>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-700 text-sm font-medium">Show Grid</span>
-            <button
-              onClick={() => setShowGrid(!showGrid)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none
-                ${showGrid ? 'bg-blue-600' : 'bg-gray-300'}`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200
-                  ${showGrid ? 'translate-x-6' : 'translate-x-1'}`}
+          <div className="flex items-center gap-2 mt-2">
+            <div className="relative w-6 h-6 rounded-full overflow-hidden ring-1 ring-black/10">
+              <input
+                type="color"
+                value={customColor}
+                onChange={(e) => setCustomColor(e.target.value)}
+                className="absolute inset-0 w-[150%] h-[150%] -top-1/4 -left-1/4 cursor-pointer p-0 border-0"
               />
+            </div>
+             <button
+              onClick={() => setSelectedColor(customColor)}
+              className="text-[10px] font-medium text-gray-600 hover:text-gray-900 underline decoration-gray-300 underline-offset-2"
+            >
+              Custom Hex
             </button>
           </div>
         </div>
 
         {/* Stroke Size Controls */}
         {selectedTool !== "eraser" && (
-          <div className="mb-4 pt-4 border-t border-gray-200">
-            <h4 className="text-gray-700 text-sm font-semibold mb-3 tracking-tight">
-              Stroke Size
+          <div className="mb-5">
+            <h4 className="text-gray-500 text-[10px] font-bold uppercase mb-2">
+              Stroke Width
             </h4>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setStrokeSize(Math.max(1, strokeSize - 1))}
-                className="w-8 h-8 bg-gray-100 hover:bg-gray-200 
-                          text-gray-700 rounded-lg transition-colors duration-200
-                          flex items-center justify-center border border-gray-200
-                          hover:border-gray-300 font-medium"
-              >
-                -
-              </button>
-              <div className="flex-1 flex items-center gap-2">
-                <input
-                  type="range"
-                  min="1"
-                  max="20"
-                  value={strokeSize}
-                  onChange={(e) => setStrokeSize(parseInt(e.target.value))}
-                  className="flex-1 accent-blue-500"
-                />
-                <span className="text-gray-700 text-sm font-medium w-10 text-center">
-                  {strokeSize}px
-                </span>
-              </div>
-              <button
-                onClick={() => setStrokeSize(Math.min(20, strokeSize + 1))}
-                className="w-8 h-8 bg-gray-100 hover:bg-gray-200 
-                          text-gray-700 rounded-lg transition-colors duration-200
-                          flex items-center justify-center border border-gray-200
-                          hover:border-gray-300 font-medium"
-              >
-                +
-              </button>
+            <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
+               <span className="text-[10px] text-gray-400 font-mono w-4">1</span>
+              <input
+                type="range"
+                min="1"
+                max="20"
+                value={strokeSize}
+                onChange={(e) => setStrokeSize(parseInt(e.target.value))}
+                className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+              />
+              <span className="text-[10px] text-gray-400 font-mono w-4">20</span>
             </div>
-            <div className="mt-3 flex justify-center">
+             <div className="mt-2 flex justify-center items-center h-6">
               <div
-                className="rounded-full bg-gray-800"
+                className="rounded-full bg-black"
                 style={{ width: `${strokeSize}px`, height: `${strokeSize}px` }}
               />
             </div>
@@ -644,82 +576,44 @@ function ColorPicker({
 
         {/* Eraser Size Controls */}
         {selectedTool === "eraser" && (
-          <div className="mb-4 pt-4 border-t border-gray-200">
-            <h4 className="text-gray-700 text-sm font-semibold mb-3 tracking-tight">
+          <div className="mb-5">
+            <h4 className="text-gray-500 text-[10px] font-bold uppercase mb-2">
               Eraser Size
             </h4>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setEraserSize(Math.max(5, eraserSize - 5))}
-                className="w-8 h-8 bg-gray-100 hover:bg-gray-200 
-                          text-gray-700 rounded-lg transition-colors duration-200
-                          flex items-center justify-center border border-gray-200
-                          hover:border-gray-300 font-medium"
-              >
-                -
-              </button>
-              <div className="flex-1 flex items-center gap-2">
-                <input
-                  type="range"
-                  min="5"
-                  max="100"
-                  step="5"
-                  value={eraserSize}
-                  onChange={(e) => setEraserSize(parseInt(e.target.value))}
-                  className="flex-1 accent-red-500"
-                />
-                <span className="text-gray-700 text-sm font-medium w-10 text-center">
-                  {eraserSize}px
-                </span>
-              </div>
-              <button
-                onClick={() => setEraserSize(Math.min(100, eraserSize + 5))}
-                className="w-8 h-8 bg-gray-100 hover:bg-gray-200 
-                          text-gray-700 rounded-lg transition-colors duration-200
-                          flex items-center justify-center border border-gray-200
-                          hover:border-gray-300 font-medium"
-              >
-                +
-              </button>
+             <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
+              <span className="text-[10px] text-gray-400 font-mono w-4">5</span>
+              <input
+                type="range"
+                min="5"
+                max="100"
+                step="5"
+                value={eraserSize}
+                onChange={(e) => setEraserSize(parseInt(e.target.value))}
+                 className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+              />
+               <span className="text-[10px] text-gray-400 font-mono w-4">100</span>
             </div>
-            <div className="mt-3 flex justify-center">
-              <div
-                className="rounded-full border-2 border-dashed border-red-500"
+            <div className="mt-2 flex justify-center items-center h-12">
+               <div
+                className="rounded-full border border-dashed border-gray-400 bg-gray-100"
                 style={{ width: `${eraserSize}px`, height: `${eraserSize}px` }}
               />
             </div>
           </div>
         )}
 
-        {/* Current Selection Info */}
-        <div className="pt-4 border-t border-gray-200">
-          <div className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-            <div
-              className="w-4 h-4 rounded border border-gray-300"
-              style={{ backgroundColor: selectedColor }}
-            />
-            <span>
-              Color: <span className="font-mono text-xs">{selectedColor}</span>
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600 mt-1 font-medium">
-            <span>
-              Tool:{" "}
-              <span className="capitalize font-semibold text-gray-800">
-                {selectedTool}
-              </span>
-            </span>
-            {selectedTool !== "eraser" && selectedTool !== "text" && (
-              <span>
-                • Stroke: <span className="font-mono">{strokeSize}px</span>
-              </span>
-            )}
-            {selectedTool === "eraser" && (
-              <span>
-                • Size: <span className="font-mono">{eraserSize}px</span>
-              </span>
-            )}
-          </div>
+        {/* Grid Toggle */}
+        <div className="pt-3 border-t border-gray-100">
+          <button
+            onClick={() => setShowGrid(!showGrid)}
+            className="w-full flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors group"
+          >
+            <div className="flex items-center gap-2">
+              <Grid3X3 className={`w-4 h-4 ${showGrid ? 'text-purple-600' : 'text-gray-400'}`} />
+              <span className="text-xs font-medium text-gray-700">Background Grid</span>
+            </div>
+            <div className={`w-2 h-2 rounded-full ${showGrid ? 'bg-purple-500' : 'bg-gray-200'}`} />
+          </button>
         </div>
       </div>
     </div>
@@ -733,120 +627,57 @@ function InstructionsPanel({
   setShowInstructions: (show: boolean) => void;
   selectedTool: Tool;
 }) {
-  const instructions = {
-    pencil: "Draw freehand strokes. Hold and drag to draw continuous lines.",
-    rect: "Click and drag to draw rectangles. Start from one corner and drag to the opposite corner.",
-    circle:
-      "Click and drag to draw circles. The distance determines the radius.",
-    triangle:
-      "Click and drag to create triangles. The drag direction determines the shape.",
-    line: "Click and drag to draw straight lines between two points.",
-    eraser:
-      "Click and drag to erase parts of your drawing. Adjust size in settings.",
-    text: "Click anywhere to start typing. Press Enter to confirm, Escape to cancel.",
-  };
-
   return (
-    <div className="fixed top-20 right-4 z-40 max-w-sm">
+    <div className="fixed top-20 right-4 z-40 w-[280px]">
       <div
-        className="bg-white/95 backdrop-blur-sm border border-white/30 
-                      rounded-xl p-4 shadow-lg
-                      animate-in slide-in-from-top-2 duration-300"
+        className="bg-white shadow-[0_5px_20px_rgba(0,0,0,0.1)] border border-gray-200 
+                      rounded-xl p-5
+                      animate-in slide-in-from-right-4 duration-300"
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-gray-900 font-semibold text-base tracking-tight">
-            Instructions
+          <h3 className="text-gray-900 font-bold text-xs uppercase tracking-wider">
+            Quick Help
           </h3>
           <button
             onClick={() => setShowInstructions(false)}
-            className="text-gray-400 hover:text-gray-600 transition-colors duration-200
-                       w-6 h-6 flex items-center justify-center rounded-lg
-                       hover:bg-gray-100"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="space-y-3">
-          <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-            <h4 className="text-gray-900 text-sm font-semibold mb-1 capitalize tracking-tight">
-              {selectedTool} Tool
-            </h4>
-            <p className="text-gray-700 text-sm">
-              {instructions[selectedTool]}
-            </p>
+        <div className="space-y-4">
+          <div className="text-sm text-gray-600 leading-relaxed">
+             Currently using: <span className="font-semibold text-gray-900 capitalize bg-gray-100 px-1 rounded">{selectedTool}</span>
           </div>
 
-          <div className="space-y-2">
-            <h4 className="text-gray-900 text-sm font-semibold tracking-tight">
-              Keyboard Shortcuts
+          <div>
+            <h4 className="text-gray-500 text-[10px] font-bold uppercase mb-2">
+              Shortcuts
             </h4>
-            <div className="grid grid-cols-1 gap-1 text-sm font-medium">
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  P
-                </span>
-                <span className="text-gray-700">Pencil</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  R
-                </span>
-                <span className="text-gray-700">Rectangle</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  C
-                </span>
-                <span className="text-gray-700">Circle</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  T
-                </span>
-                <span className="text-gray-700">Triangle</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  L
-                </span>
-                <span className="text-gray-700">Line</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  E
-                </span>
-                <span className="text-gray-700">Eraser</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  X
-                </span>
-                <span className="text-gray-700">Text</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  Ctrl+S
-                </span>
-                <span className="text-gray-700">Settings</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-500 font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                  Ctrl+Shift+S
-                </span>
-                <span className="text-gray-700">Export PDF</span>
-              </div>
+            <div className="grid grid-cols-2 gap-2">
+               {[
+                 {k: 'P', l: 'Pencil'},
+                 {k: 'R', l: 'Rectangle'},
+                 {k: 'C', l: 'Circle'},
+                 {k: 'L', l: 'Line'},
+                 {k: 'T', l: 'Triangle'},
+                 {k: 'E', l: 'Eraser'},
+                 {k: 'X', l: 'Text'},
+               ].map(item => (
+                 <div key={item.k} className="flex items-center justify-between text-xs group hover:bg-gray-50 p-1 rounded cursor-default">
+                   <span className="text-gray-600">{item.l}</span>
+                   <kbd className="font-mono text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 min-w-[20px] text-center">{item.k}</kbd>
+                 </div>
+               ))}
             </div>
           </div>
-
-          <div className="p-3 bg-green-50 rounded-lg border border-green-100">
-            <h4 className="text-green-800 text-sm font-semibold mb-1 tracking-tight">
-              Touch Support
-            </h4>
-            <p className="text-green-700 text-sm">
-              All tools work with touch on mobile devices. Use single finger
-              gestures.
-            </p>
+          
+          <div className="pt-3 border-t border-gray-100">
+             <div className="flex items-center justify-between text-xs">
+                   <span className="text-gray-600">Export PDF</span>
+                   <kbd className="font-mono text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">Ctrl + Shift + S</kbd>
+              </div>
           </div>
         </div>
       </div>
@@ -856,21 +687,20 @@ function InstructionsPanel({
 
 function TextInstructions() {
   return (
-    <div className="fixed bottom-4 left-4 z-40">
+    <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
       <div
-        className="bg-white/95 backdrop-blur-sm border border-white/30 
-                      rounded-xl p-3 shadow-lg
+        className="bg-gray-900/90 backdrop-blur-md text-white px-4 py-2 
+                      rounded-full shadow-lg flex items-center gap-4
                       animate-in slide-in-from-bottom-2 duration-300"
       >
-        <div className="flex items-center gap-2 text-gray-700 text-sm font-medium">
-          <TextIcon className="w-4 h-4" />
-          <span>
-            Click to place text •{" "}
-            <kbd className="bg-gray-100 px-1 rounded text-xs">Enter</kbd> to
-            confirm •{" "}
-            <kbd className="bg-gray-100 px-1 rounded text-xs">Escape</kbd> to
-            cancel
-          </span>
+        <span className="text-xs font-medium flex items-center gap-2">
+          <TextIcon className="w-3 h-3 text-green-400" />
+          Click to start typing
+        </span>
+        <div className="h-3 w-px bg-gray-700" />
+        <div className="flex items-center gap-2">
+           <span className="text-[10px] text-gray-400"><kbd className="bg-gray-800 px-1 rounded">Enter</kbd> to save</span>
+           <span className="text-[10px] text-gray-400"><kbd className="bg-gray-800 px-1 rounded">Esc</kbd> to cancel</span>
         </div>
       </div>
     </div>
