@@ -61,9 +61,9 @@ export const CtaSection: FC<CtaSectionProps> = ({ isLoggedIn }) => (
                   <Link href="/signup">
                     <Button 
                       size="lg"
-                      className="h-14 px-12 bg-white text-stone-900 hover:bg-stone-100 rounded-full font-medium tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+                      className="h-14 px-12  text-black hover:bg-stone-100 rounded-full font-medium tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
                     >
-                      <span>Get Started</span>
+                      <span className="text-black" >Get Started</span>
                       <FiArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>
                   </Link>
