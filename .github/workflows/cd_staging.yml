@@ -42,7 +42,7 @@ jobs:
             fi
 
             # Go to project and deploy
-            cd Valhalla-brush git pull origin main
+            cd Valhalla-brush && git pull origin main
             pnpm install
             pnpm run build
 
