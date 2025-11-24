@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 *{
-   font-family: "Bangers", system-ui;
+        font-family: "Syne Mono", monospace;
   font-weight: 400;
   font-style: normal;
 }
