@@ -2,6 +2,7 @@ import { FC } from "react";
 import type { Feature } from "@/utils/interfaces";
 import { FiCloud, FiLayers, FiShare2, FiStar, FiUsers } from "react-icons/fi";
 import { FeatureCard } from "./FeatureCard";
+import Link from "next/link";
 
 const FEATURES_DATA: Feature[] = [
   { 
@@ -90,9 +91,12 @@ export const FeaturesSection: FC = () => (
               </p>
             </div>
             <div className="flex justify-start lg:justify-end">
+              <Link href={"/canvas"}>              
               <button className="h-14 px-12 bg-white text-stone-900 rounded-full font-medium tracking-wide hover:bg-stone-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                 Get Started
               </button>
+              </Link>
+
             </div>
           </div>
         </div>
