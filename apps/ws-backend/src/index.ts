@@ -8,11 +8,14 @@ const wss = new WebSocketServer({ port: 8080 });
 interface User {
   ws: WebSocket,
   rooms: string[],
-  userId: string
+  userId: string,
+  name: string,      // New: Store name in memory
+  photo: string      // New: Store avatar URL in memory
 }
 
 const users: User[] = [];
 
+// Helper to verify token and return userId
 function checkUser(token: string): string | null {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -29,28 +32,41 @@ function checkUser(token: string): string | null {
   } catch(e) {
     return null;
   }
-
 }
 
-wss.on('connection', function connection(ws, request) {
+wss.on('connection', async function connection(ws, request) {
   const url = request.url;
   if (!url) {
     return;
   }
   const queryParams = new URLSearchParams(url.split('?')[1]);
   const token = queryParams.get('token') || "";
+  
   const userId = checkUser(token);
 
   if (userId == null) {
-    ws.close()
+    ws.close();
     return null;
+  }
+
+  // --- NEW: Fetch User Details from DB ---
+  // We do this once on connection so we don't hammer the DB on every chat message
+  const userDetails = await prismaClient.user.findUnique({
+      where: { id: userId }
+  });
+
+  if (!userDetails) {
+      ws.close();
+      return;
   }
 
   users.push({
     userId,
     rooms: [],
-    ws
-  })
+    ws,
+    name: userDetails.name,
+    photo: userDetails.photo || "" // Handle null photos
+  });
 
   ws.on('message', async function message(data) {
     let parsedData;
@@ -70,11 +86,10 @@ wss.on('connection', function connection(ws, request) {
       if (!user) {
         return;
       }
-      user.rooms = user?.rooms.filter(x => x === parsedData.room);
+      // --- FIX: Filter Logic was inverted previously ---
+      // We want to KEEP rooms that are NOT the one being left
+      user.rooms = user.rooms.filter(x => x !== parsedData.room);
     }
-
-    console.log("message received")
-    console.log(parsedData);
 
     if (parsedData.type === "chat") {
       const roomId = parsedData.roomId;
@@ -88,18 +103,31 @@ wss.on('connection', function connection(ws, request) {
         }
       });
 
+      // Find the sender to get their name/photo
+      const currentUser = users.find(x => x.ws === ws);
+
       users.forEach(user => {
         if (user.rooms.includes(roomId)) {
           user.ws.send(JSON.stringify({
             type: "chat",
             message: message,
-            roomId
+            roomId,
+            // --- NEW: Send sender details to frontend ---
+            userId: currentUser?.userId,
+            name: currentUser?.name,
+            photo: currentUser?.photo
           }))
         }
       })
     }
-
+  });
+  
+  // Optional: Handle disconnect to clean up memory
+  ws.on('close', () => {
+      const idx = users.findIndex(x => x.ws === ws);
+      if (idx !== -1) {
+          users.splice(idx, 1);
+      }
   });
 
 });
-
