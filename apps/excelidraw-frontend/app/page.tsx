@@ -8,7 +8,7 @@ import { ToastContainer } from "react-toastify";
 import { Footer } from "@/components/ui/Footer";
 import { HeroSection } from "@/components/ui/HeroSection";
 import { AdditionalInfoSection } from "@/components/ui/AdditionalnfoSection";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
+
 import { FeaturesSection } from "@/components/ui/FeatureSection";
 import { CtaSection } from "@/components/ui/CtaSection";
 
@@ -17,8 +17,8 @@ const App: FC = () => {
   // This component now purely handles layout assembly.
 
   return (
-    <div className="min-h-screen bg-black text-gray-100 overflow-x-hidden relative">
-      <AnimatedBackground />
+    <div className="min-h-screen bg-transparent text-gray-100 overflow-x-hidden relative">
+
       
       <ToastContainer 
         theme="dark" 
@@ -43,6 +43,7 @@ const App: FC = () => {
       
       <Footer />
     </div>
+  
   );
 };
 

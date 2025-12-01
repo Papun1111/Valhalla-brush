@@ -1,51 +1,57 @@
 "use client";
 
 import { WS_URL } from "@/config";
-import { initDraw } from "@/draw";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Canvas } from "./Canvas";
 
 export function RoomCanvas({ roomId }: { roomId: string }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("authorization")
-        : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("authorization") : null;
+    
     if (!token) {
       console.error("Authorization token not found in localStorage");
+      // Optional: redirect to login here
       return;
     }
 
-    // Initialize WebSocket with dynamic token
+    // 1. Initialize WebSocket
     const ws = new WebSocket(`${WS_URL}?token=${encodeURIComponent(token)}`);
 
     ws.onopen = () => {
+      // 2. Once connected, store the socket in state
       setSocket(ws);
-      // Join the room
+      
+      // 3. Join the room immediately
       const joinMsg = JSON.stringify({ type: "join_room", roomId });
       ws.send(joinMsg);
-      // Initialize drawing on the canvas
-      if (canvasRef.current) {
-        initDraw(canvasRef.current,roomId,ws);
-      }
+      
+      console.log(`Connected to room: ${roomId}`);
     };
 
-    ws.onerror = (err) => console.error("WebSocket error:\n", err);
+    ws.onerror = (err) => {
+      console.error("WebSocket connection error:", err);
+    };
 
+    // 4. Cleanup on unmount
     return () => {
       ws.close();
     };
   }, [roomId]);
 
+  // 5. Show loading state until socket is ready
   if (!socket) {
-    return <div>Connecting to server...</div>
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#f8f9fa] text-gray-500 font-mono text-sm">
+        Connecting to server...
+      </div>
+    );
   }
 
+  // 6. Pass the ready socket to the Canvas component
+  // The Canvas component (and Game.ts) now handles ALL drawing logic
   return (
-    <Canvas  roomId={roomId} socket={socket} />
+    <Canvas roomId={roomId} socket={socket} />
   );
 }
