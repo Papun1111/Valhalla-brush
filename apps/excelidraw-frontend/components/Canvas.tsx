@@ -277,11 +277,9 @@ export function Canvas({
       {/* Header Buttons */}
       <div className="fixed top-4 right-4 z-30 flex gap-2">
          <button className="h-9 px-3 bg-[#e0dfff] hover:bg-[#d0cfff] text-[#5b5bd6] rounded-lg text-xs font-bold transition-colors">
-            Excalidraw+
+            Valhalla Brush
          </button>
-         <button className="h-9 px-4 bg-[#6965db] hover:bg-[#5b5bd6] text-white rounded-lg text-xs font-bold shadow-md transition-all">
-            Share
-         </button>
+
       </div>
 
       {/* Footer Controls (Functional Now) */}
