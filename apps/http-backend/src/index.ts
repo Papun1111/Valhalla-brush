@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from '@repo/backend-common/config';
 import { middleware } from "./middleware";
 import { CreateUserSchema, SigninSchema, CreateRoomSchema } from "@repo/common/types";
+import { rateLimit } from 'express-rate-limit'
+
 import { prismaClient } from "@repo/db/client";
 import cors from "cors";
 import bcrypt from "bcrypt";
@@ -11,7 +13,17 @@ import axios from "axios";
 import dotenv from "dotenv"
 dotenv.config();
 const app = express();
+
+const limiter = rateLimit({
+	windowMs: 10 * 60 * 1000, // 15 minutes
+	limit: 100, 
+	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	ipv6Subnet: 56, // Set to 60 or 64 to be less aggressive, or 52 or 48 to be more aggressive
+	// store: ... , // Redis, Memcached, etc. See below.
+})
 app.use(express.json());
+
 app.use(cors());
 
 const port = 8000;
@@ -20,11 +32,11 @@ const port = 8000;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
-// The URL where Google should send the user back to (Backend URL)
+
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 // The Frontend URL to redirect to after success
 const FRONTEND_URL = process.env.FRONTEND_URL;
-
+app.use(limiter);
 // 1. INITIATE LOGIN: Redirect user to Google
 app.get("/auth/google", (req, res) => {
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
