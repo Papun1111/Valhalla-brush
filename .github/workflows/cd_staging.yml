@@ -14,11 +14,11 @@ jobs:
       - name: SSH into DigitalOcean and deploy
         run: |
           # Save the private key from GitHub secrets
-          echo "${{ secrets.SSH_PRIVATE_KEY_DO }}" > ssh_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
           # SSH into DigitalOcean droplet and run deployment
-          ssh -o StrictHostKeyChecking=no -i ssh_key root@134.209.144.86 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ssh_key root@157.245.111.116 << 'EOF'
             set -e
 
             # Update system package info
@@ -42,7 +42,7 @@ jobs:
             fi
 
             # Go to project and deploy
-            cd Valhalla-brush git pull origin main
+            cd Valhalla-brush && git pull origin main
             pnpm install
             pnpm run build
 
