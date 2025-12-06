@@ -13,8 +13,7 @@ import { FeaturesSection } from "@/components/ui/FeatureSection";
 
 
 const App: FC = () => {
-  // Logic has been moved to HeroSection.tsx
-  // This component now purely handles layout assembly.
+ 
 
   return (
     <div className="min-h-screen bg-transparent text-gray-100 overflow-x-hidden relative">
