@@ -10,7 +10,7 @@ import { HeroSection } from "@/components/ui/HeroSection";
 import { AdditionalInfoSection } from "@/components/ui/AdditionalnfoSection";
 
 import { FeaturesSection } from "@/components/ui/FeatureSection";
-import { CtaSection } from "@/components/ui/CtaSection";
+
 
 const App: FC = () => {
   // Logic has been moved to HeroSection.tsx
@@ -39,7 +39,7 @@ const App: FC = () => {
       
       <AdditionalInfoSection />
       
-      <CtaSection /> 
+
       
       <Footer />
     </div>
