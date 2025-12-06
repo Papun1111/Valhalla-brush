@@ -1,4 +1,4 @@
-name: Deploy to Pagesmith (DigitalOcean)
+name: Deploy to Valhalla-brush (DigitalOcean)
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
           chmod 600 ssh_key
 
           # SSH into DigitalOcean droplet and run deployment
-          ssh -o StrictHostKeyChecking=no -i ssh_key root@134.209.144.86 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ssh_key root@157.245.111.116 << 'EOF'
             set -e
 
             # Update system package info
