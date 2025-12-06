@@ -1,7 +1,8 @@
 "use client";
 import axios from "axios";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+// Mocking useRouter for Preview Environment
+// import { useRouter } from "next/navigation";
 import { HTTP_BACKEND } from "@/config";
 import {
   Plus,
@@ -13,6 +14,18 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+
+
+
+const useRouter = () => {
+  return {
+    push: (path: string) => {
+      window.location.href = path;
+    }
+  };
+};
+// ------------------------------------------------------------------
+
 export default function CreateJoinRoom() {
   const [roomName, setRoomName] = useState("");
   const [roomId, setRoomId] = useState<string | null>(null);
@@ -22,16 +35,29 @@ export default function CreateJoinRoom() {
   const [copied, setCopied] = useState(false);
   const router = useRouter();
 
+  // --- Authentication Guard ---
+  useEffect(() => {
+    // Check if token exists immediately on mount
+    const token = localStorage.getItem("authorization");
+    
+    // If no token, redirect to Home Page immediately
+    if (!token) {
+      router.push("/");
+    }
+  }, []); // Empty dependency array to run once on mount
+  // --------------------------------
+
   const handleCreate = async () => {
     setError(null);
     setLoading(true);
 
     try {
-      const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("authorization")
-          : null;
-      if (!token) throw new Error("Authorization token not found");
+      const token = localStorage.getItem("authorization");
+      
+      if (!token) {
+         router.push("/");
+         return;
+      }
 
       const response = await axios.post(
         `${HTTP_BACKEND}/room`,

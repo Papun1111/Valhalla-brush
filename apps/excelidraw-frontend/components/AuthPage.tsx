@@ -58,7 +58,7 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
 
         // Redirect to home with verify flag
         setTimeout(() => {
-          router.push("/?login=success");
+          router.push("/");
         }, 1000);
       } else {
         setUsername("");
@@ -269,7 +269,7 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
           </form>
         </div>
       </div>
-      <style jsx>{`
+      <style>{`
         @keyframes blob {
           0%, 100% { transform: translate(0px, 0px) scale(1); }
           33% { transform: translate(30px, -50px) scale(1.1); }

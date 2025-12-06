@@ -72,7 +72,7 @@ app.get("/auth/google/callback", async (req, res) => {
             client_secret: GOOGLE_CLIENT_SECRET,
             code,
             grant_type: "authorization_code",
-            redirect_uri: GOOGLE_REDIRECT_URI, // Must match the initiate step
+            redirect_uri: GOOGLE_REDIRECT_URI, 
         });
 
         // B. Get User Profile
@@ -187,7 +187,7 @@ app.post("/room", middleware, async (req: Request, res: Response) => {
     }
 });
 
-app.get("/chats/:roomId", async (req: Request, res: Response) => {
+app.get("/chats/:roomId",middleware, async (req: Request, res: Response) => {
     // ... existing chat code
     try {
         const roomId = Number(req.params.roomId);
@@ -202,7 +202,7 @@ app.get("/chats/:roomId", async (req: Request, res: Response) => {
     }
 });
 
-app.get("/room/:slug", async (req: Request, res: Response) => {
+app.get("/room/:slug",middleware, async (req: Request, res: Response) => {
     // ... existing room slug code
     const slug = req.params.slug;
     const room = await prismaClient.room.findFirst({
