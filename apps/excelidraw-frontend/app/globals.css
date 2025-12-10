@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 *{
-        font-family: "Syne Mono", monospace;
-  font-weight: 400;
-  font-style: normal;
+        /* font-family: "Skranji", system-ui;
+  font-weight: 500;
+  font-style: normal; */
 }
 @layer base {
   :root {

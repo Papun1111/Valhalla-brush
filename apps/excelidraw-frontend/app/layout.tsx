@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
+import localFont from "next/font/local";
 
+const norse = localFont({
+  src: './Norse.otf',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: "ValhallaBrush",
@@ -16,12 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-       <link rel="preconnect" href="https://fonts.googleapis.com"/>
+{/* <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" />
-<link href="https://fonts.googleapis.com/css2?family=Odibee+Sans&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&family=Syne+Mono&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Skranji:wght@400;700&display=swap" rel="stylesheet"/> */}
       </head>
       <body
-        className={`antialiased` } suppressHydrationWarning={true}
+        className={`antialiased ${norse.className}`} suppressHydrationWarning={true}
       >
         {children}
       </body>
