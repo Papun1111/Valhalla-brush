@@ -1,11 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-*{
-        /* font-family: "Skranji", system-ui;
-  font-weight: 500;
-  font-style: normal; */
-}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

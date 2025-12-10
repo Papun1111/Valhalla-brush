@@ -56,7 +56,7 @@ export type Shape =
       font: string; 
     };
 
-// 2. API Helper
+
 export async function getExistingShapes(roomId: string): Promise<Shape[]> {
     try {
         const res = await axios.get(`${HTTP_BACKEND}/chats/${roomId}`);

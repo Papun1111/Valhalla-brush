@@ -18,12 +18,8 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // --- NEW GOOGLE LOGIC ---
-  // We no longer handle the 'code' here. 
-  // We simply send the user to the backend to start the flow.
   const handleGoogleLogin = () => {
-    // Redirect browser to your Backend's Google Auth endpoint
-    // The backend will redirect to Google -> Handle Callback -> Redirect to Home with Token
+
     window.location.href = `${HTTP_BACKEND}/auth/google`;
   };
 
