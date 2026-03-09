@@ -1,6 +1,6 @@
 import { FC } from "react";
 import type { Feature } from "@/utils/interfaces";
-import { FiCloud, FiLayers, FiShare2, FiStar, FiUsers } from "react-icons/fi";
+import { FiCloud, FiLayers, FiShare2, FiStar, FiUsers, FiArrowRight } from "react-icons/fi";
 import { FeatureCard } from "./FeatureCard";
 import Link from "next/link";
 
@@ -56,7 +56,7 @@ export const FeaturesSection: FC = () => (
           <div>
             <h2 className="text-5xl lg:text-6xl font-light text-stone-900 leading-tight mb-6">
               We use best<br />
-              <span className="font-serif italic">materials</span>!
+              <span className="font-serif italic text-stone-700">materials</span>!
             </h2>
           </div>
           <div>
@@ -96,7 +96,6 @@ export const FeaturesSection: FC = () => (
                 Get Started
               </button>
               </Link>
-
             </div>
           </div>
         </div>

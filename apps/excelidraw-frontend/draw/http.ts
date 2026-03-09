@@ -1,14 +1,8 @@
 import { HTTP_BACKEND } from "@/config";
 import axios from "axios";
+import { getExistingShapes } from "./index";
 
-export async function getExistingShapes(roomId: string) {
-    const res = await axios.get(`${HTTP_BACKEND}/chats/${roomId}`);
-    const messages = res.data.messages;
+// Re-export for backwards compatibility
+export { getExistingShapes };
 
-    const shapes = messages.map((x: {message: string}) => {
-        const messageData = JSON.parse(x.message)
-        return messageData.shape;
-    })
-
-    return shapes;
-}
+// This file is kept for backwards compatibility but delegates to index.ts

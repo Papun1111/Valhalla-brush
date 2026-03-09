@@ -20,8 +20,10 @@ export default function FindJoinRoom() {
     setLoading(true);
 
     try {
+      const token = localStorage.getItem("authorization");
       const response = await axios.get(
-        `${HTTP_BACKEND}/room/${encodeURIComponent(slug.trim())}`
+        `${HTTP_BACKEND}/room/${encodeURIComponent(slug.trim())}`,
+        { headers: token ? { authorization: token } : {} }
       );
 
       const roomData = response.data.room;

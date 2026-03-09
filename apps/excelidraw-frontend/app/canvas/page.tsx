@@ -1,8 +1,7 @@
 "use client";
 import axios from "axios";
 import { useState, useEffect } from "react";
-// Mocking useRouter for Preview Environment
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { HTTP_BACKEND } from "@/config";
 import {
   Plus,
@@ -13,17 +12,6 @@ import {
   Loader2,
   AlertCircle,
 } from "lucide-react";
-
-
-
-
-const useRouter = () => {
-  return {
-    push: (path: string) => {
-      window.location.href = path;
-    }
-  };
-};
 // ------------------------------------------------------------------
 
 export default function CreateJoinRoom() {

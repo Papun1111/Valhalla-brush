@@ -8,7 +8,7 @@ import { rateLimit } from 'express-rate-limit'
 
 import { prismaClient } from "@repo/db/client";
 import cors from "cors";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import axios from "axios";
 import dotenv from "dotenv"
 dotenv.config();
@@ -119,7 +119,7 @@ app.post("/signup", async (req: Request, res: Response) => {
     // ... existing signup code
     const parsedData = CreateUserSchema.safeParse(req.body);
     if (!parsedData.success) {
-        res.json({ message: "Incorrect inputs" });
+        res.status(400).json({ message: "Incorrect inputs", errors: parsedData.error.issues });
         return;
     }
     try {
@@ -132,7 +132,8 @@ app.post("/signup", async (req: Request, res: Response) => {
                 name: parsedData.data.name
             }
         });
-        res.json({ userId: user.id });
+        const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+        res.json({ token, userId: user.id });
     } catch (e) {
         res.status(411).json({ message: "User already exists with this username" });
     }
@@ -142,7 +143,7 @@ app.post("/signin", async (req: Request, res: Response) => {
     // ... existing signin code
     const parsedData = SigninSchema.safeParse(req.body);
     if (!parsedData.success) {
-        res.json({ message: "Incorrect inputs" });
+        res.status(400).json({ message: "Incorrect inputs", errors: parsedData.error.issues });
         return;
     }
     const user = await prismaClient.user.findFirst({
@@ -169,14 +170,14 @@ app.post("/room", middleware, async (req: Request, res: Response) => {
     // ... existing room code
     const parsedData = CreateRoomSchema.safeParse(req.body);
     if (!parsedData.success) {
-        res.json({ message: "Incorrect inputs" });
+        res.status(400).json({ message: "Incorrect inputs", errors: parsedData.error.issues });
         return;
     }
     const userId = (req as any).userId;
     try {
         const room = await prismaClient.room.create({
             data: {
-                slug: parsedData.data?.name,
+                slug: parsedData.data.name,
                 adminId: userId as string,
             },
         });

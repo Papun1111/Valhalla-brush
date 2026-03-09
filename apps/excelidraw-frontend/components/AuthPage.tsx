@@ -57,16 +57,22 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
           router.push("/");
         }, 1000);
       } else {
+        const token = data.token;
+        if (token) {
+            localStorage.setItem("authorization", token);
+            axios.defaults.headers.common["Authorization"] = token;
+        }
+
         setUsername("");
         setName("");
         setPassword("");
 
-        toast.success("✨ Account created successfully! Please sign in", {
+        toast.success("✨ Account created successfully! Redirecting you...", {
           transition: Zoom,
         });
 
         setTimeout(() => {
-          router.push("/signin");
+          router.push("/");
         }, 1500);
       }
     } catch (err: any) {
@@ -144,7 +150,7 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
               {isSignin ? "Sign in with Google" : "Sign up with Google"}
             </button>
 
-            <div className="relative flex items-center">
+            <div className="relative flex items-center py-2">
               <div className="flex-grow border-t border-stone-300"></div>
               <span className="flex-shrink-0 mx-4 text-stone-400 text-xs uppercase tracking-widest font-medium">Or continue with</span>
               <div className="flex-grow border-t border-stone-300"></div>
@@ -153,7 +159,7 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
             {/* Email Input */}
             <div className="space-y-2">
               <label htmlFor="username" className="block text-sm font-semibold text-stone-700">Username</label>
-              <div className="relative">
+              <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -176,7 +182,7 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
             {!isSignin && (
               <div className="space-y-2">
                 <label htmlFor="name" className="block text-sm font-semibold text-stone-700">Full Name</label>
-                <div className="relative">
+                <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -199,7 +205,7 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
             {/* Password Input */}
             <div className="space-y-2">
               <label htmlFor="password" className="block text-sm font-semibold text-stone-700">Password</label>
-              <div className="relative">
+              <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -242,7 +248,7 @@ export default function AuthPage({ isSignin }: AuthPageProps) {
               )}
             </button>
 
-            <div className="text-center space-y-3">
+            <div className="text-center space-y-3 pt-2">
               <p className="text-sm text-stone-600">
                 {isSignin ? "New here? " : "Already have an account? "}
                 <button

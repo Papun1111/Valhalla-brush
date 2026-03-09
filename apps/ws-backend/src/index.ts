@@ -78,7 +78,7 @@ wss.on('connection', async function connection(ws, request) {
 
     if (parsedData.type === "join_room") {
       const user = users.find(x => x.ws === ws);
-      user?.rooms.push(parsedData.roomId);
+      user?.rooms.push(String(parsedData.roomId));
     }
 
     if (parsedData.type === "leave_room") {
@@ -86,13 +86,11 @@ wss.on('connection', async function connection(ws, request) {
       if (!user) {
         return;
       }
-      // --- FIX: Filter Logic was inverted previously ---
-      // We want to KEEP rooms that are NOT the one being left
-      user.rooms = user.rooms.filter(x => x !== parsedData.room);
+      user.rooms = user.rooms.filter(x => x !== parsedData.roomId);
     }
 
     if (parsedData.type === "chat") {
-      const roomId = parsedData.roomId;
+      const roomId = String(parsedData.roomId);
       const message = parsedData.message;
 
       await prismaClient.chat.create({
