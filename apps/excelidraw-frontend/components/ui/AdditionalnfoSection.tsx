@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { IconType } from "react-icons";
-import { FiClock, FiShield, FiZap } from "react-icons/fi";
+import { FiClock, FiShield, FiZap, FiArrowRight } from "react-icons/fi";
 
 interface WhyChooseItem {
   icon: IconType;
@@ -9,41 +9,46 @@ interface WhyChooseItem {
 }
 
 const WHY_CHOOSE_DATA: WhyChooseItem[] = [
-  { icon: FiZap, title: "Lightning Fast", desc: "Optimized for performance with 60fps drawing and instant collaboration" },
-  { icon: FiShield, title: "Secure & Private", desc: "End-to-end encryption keeps your creative work safe and confidential" },
-  { icon: FiClock, title: "Version History", desc: "Never lose your progress with automatic saves and complete version control" }
+  { icon: FiZap, title: "Lightning Fast Sync", desc: "Optimized for performance with 60fps rendering and instant WebSockets." },
+  { icon: FiShield, title: "Secure & Private", desc: "Enterprise-grade security keeps your creative work safe and confidential." },
+  { icon: FiClock, title: "Persistent Storage", desc: "Never lose your progress with automatic database saves and history." }
 ];
 
 export const AdditionalInfoSection: FC = () => (
-  <section className="relative py-24 bg-gradient-to-b from-white to-stone-50">
-    <div className="container mx-auto px-6 lg:px-12 max-w-7xl">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+  <section id="about" className="relative py-32 bg-[#08080a] border-t border-white/5 overflow-hidden">
+    {/* Grid Background */}
+    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] opacity-30" />
+    
+    <div className="relative container mx-auto px-6 lg:px-12 max-w-7xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
         {/* Left Content */}
-        <div>
-          <div className="flex items-center gap-3 text-sm text-stone-600 tracking-wide mb-6">
-            <div className="w-8 h-px bg-stone-400"></div>
-            <span className="uppercase">Why Choose Us</span>
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-8">
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="uppercase tracking-[0.15em] text-xs font-semibold text-white/60">Why Choose Us</span>
           </div>
           
-          <h3 className="text-4xl lg:text-5xl font-light text-stone-900 mb-12 leading-tight">
-            We can combine<br />
-            <span className="font-serif italic">nature & home</span><br />
-            comfort
+          <h3 className="text-4xl lg:text-5xl font-bold tracking-tighter text-white leading-tight mb-10">
+            Engineered for<br />
+            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">performance.</span>
           </h3>
           
-          <div className="space-y-8">
-            {WHY_CHOOSE_DATA.map((item) => {
+          <div className="space-y-10">
+            {WHY_CHOOSE_DATA.map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={item.title} className="flex items-start gap-5 group">
-                  <div className="flex-shrink-0 p-3 bg-stone-900 rounded-xl group-hover:bg-stone-800 transition-all duration-300 transform group-hover:scale-105">
-                    <Icon className="h-5 w-5 text-white" />
+                <div key={item.title} className="flex items-start gap-6 group">
+                  <div className="relative flex-shrink-0">
+                    <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="relative w-14 h-14 bg-[#141418] border border-white/10 rounded-2xl flex items-center justify-center group-hover:border-cyan-500/50 transition-colors duration-500 shadow-lg">
+                      <Icon className="h-6 w-6 text-white/70 group-hover:text-cyan-400 transition-colors duration-500" />
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-lg font-medium text-stone-900 mb-2 group-hover:text-stone-700 transition-colors duration-300">
+                  <div className="pt-1">
+                    <h4 className="text-xl font-bold text-white mb-2 tracking-tight group-hover:text-cyan-50 transition-colors duration-500">
                       {item.title}
                     </h4>
-                    <p className="text-stone-600 leading-relaxed text-sm">
+                    <p className="text-white/40 leading-relaxed text-sm">
                       {item.desc}
                     </p>
                   </div>
@@ -52,60 +57,44 @@ export const AdditionalInfoSection: FC = () => (
             })}
           </div>
 
-          <div className="mt-12">
-            <button className="inline-flex items-center gap-2 text-stone-900 font-medium hover:gap-4 transition-all duration-300 border-b-2 border-stone-900 pb-1">
-              <span className="uppercase tracking-wide text-sm">Learn More</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+          <div className="mt-14">
+            <button className="inline-flex items-center gap-3 text-white font-medium hover:gap-5 transition-all duration-300 group">
+              <span className="uppercase tracking-widest text-sm text-white/70 group-hover:text-white">Read Documentation</span>
+              <FiArrowRight className="w-4 h-4 text-cyan-400" />
             </button>
           </div>
         </div>
 
         {/* Right Content - Stats Card */}
-        <div className="relative">
-          {/* Background image placeholder */}
-          <div className="relative bg-stone-200 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-stone-300 to-stone-400"></div>
+        <div className="relative lg:h-[600px] flex items-center justify-center perspective-1000">
+          <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-blue-500/5 rounded-[40px] blur-3xl transform -rotate-6" />
+          
+          <div className="relative w-full max-w-[400px] aspect-[4/5] bg-[#141418] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-700 hover:-rotate-2 group">
+            {/* Inner glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-cyan-400/30 transition-colors duration-700" />
             
-            {/* Overlay pattern */}
-            <div className="absolute inset-0 opacity-10" 
-                 style={{
-                   backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                   backgroundSize: '30px 30px'
-                 }}>
-            </div>
-
-            {/* Floating stats card */}
-            <div className="absolute bottom-8 left-8 right-8 bg-white rounded-2xl p-6 shadow-2xl">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex -space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-stone-400 to-stone-600 rounded-full border-2 border-white"></div>
-                  <div className="w-10 h-10 bg-gradient-to-br from-stone-500 to-stone-700 rounded-full border-2 border-white"></div>
-                </div>
-                <div>
-                  <div className="text-2xl font-light text-stone-900">12m+</div>
-                  <div className="text-xs text-stone-600 tracking-wide">Customers</div>
-                </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center text-white z-10">
+              {/* Stat 1 */}
+              <div className="mb-12">
+                <div className="text-7xl font-black tracking-tighter bg-gradient-to-br from-white to-white/40 bg-clip-text text-transparent mb-2 blur-[0.5px]">20K+</div>
+                <div className="text-sm uppercase tracking-widest font-semibold text-cyan-400">Active Workspaces</div>
               </div>
               
-              <div className="h-px bg-stone-200 my-4"></div>
+              <div className="w-full h-px bg-white/10 mb-12" />
               
-              <div className="grid grid-cols-2 gap-4">
+              {/* Other Stats */}
+              <div className="grid grid-cols-2 gap-8 w-full">
                 <div>
-                  <div className="text-xl font-light text-stone-900">150+</div>
-                  <div className="text-xs text-stone-600">Countries</div>
+                  <div className="text-3xl font-bold tracking-tight text-white mb-1">99.9%</div>
+                  <div className="text-[10px] uppercase tracking-widest text-white/40">Uptime</div>
                 </div>
                 <div>
-                  <div className="text-xl font-light text-stone-900">24/7</div>
-                  <div className="text-xs text-stone-600">Support</div>
+                  <div className="text-3xl font-bold tracking-tight text-white mb-1">&lt;50ms</div>
+                  <div className="text-[10px] uppercase tracking-widest text-white/40">Latency</div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Decorative element */}
-          <div className="absolute -z-10 top-8 -right-8 w-32 h-32 bg-stone-300/30 rounded-full filter blur-2xl"></div>
         </div>
       </div>
     </div>

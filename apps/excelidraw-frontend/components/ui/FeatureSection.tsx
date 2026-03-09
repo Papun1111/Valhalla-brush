@@ -1,100 +1,104 @@
 import { FC } from "react";
 import type { Feature } from "@/utils/interfaces";
-import { FiCloud, FiLayers, FiShare2, FiStar, FiUsers, FiArrowRight } from "react-icons/fi";
+import { FiCloud, FiLayers, FiShare2, FiStar, FiUsers } from "react-icons/fi";
 import { FeatureCard } from "./FeatureCard";
 import Link from "next/link";
+import { Button } from "@repo/ui/button";
+import { FiArrowRight } from "react-icons/fi";
 
 const FEATURES_DATA: Feature[] = [
   { 
     icon: FiShare2, 
     title: "Real-time Collaboration", 
     desc: "Work together with your team in real-time. Share your drawings instantly with a simple link and watch as ideas come to life together.", 
-    color: "from-stone-700 to-stone-800", 
-    hoverColor: "group-hover:from-stone-600 group-hover:to-stone-700" 
+    color: "", 
+    hoverColor: "" 
   },
   { 
     icon: FiUsers, 
     title: "Multiplayer Editing", 
     desc: "Multiple users can edit the same canvas simultaneously. See who's drawing what in real-time with live cursors and collaborative tools.", 
-    color: "from-stone-600 to-stone-700", 
-    hoverColor: "group-hover:from-stone-500 group-hover:to-stone-600" 
+    color: "", 
+    hoverColor: "" 
   },
   { 
     icon: FiStar, 
     title: "Smart Drawing", 
-    desc: "Intelligent shape recognition and drawing assistance helps you create perfect diagrams. AI-powered suggestions make creating easier.", 
-    color: "from-stone-800 to-stone-900", 
-    hoverColor: "group-hover:from-stone-700 group-hover:to-stone-800" 
+    desc: "Intelligent shape recognition and drawing assistance helps you create perfect diagrams. Advanced tools make creating easier.", 
+    color: "", 
+    hoverColor: "" 
   },
   { 
     icon: FiLayers, 
     title: "Layer Management", 
     desc: "Organize your work with unlimited layers. Non-destructive editing with blend modes, opacity controls, and layer effects.", 
-    color: "from-stone-700 to-stone-800", 
-    hoverColor: "group-hover:from-stone-600 group-hover:to-stone-700" 
+    color: "", 
+    hoverColor: "" 
   },
   { 
     icon: FiCloud, 
     title: "Cloud Sync", 
     desc: "Your work is automatically saved and synced across all devices. Access your projects anywhere, anytime with seamless cloud integration.", 
-    color: "from-stone-600 to-stone-700", 
-    hoverColor: "group-hover:from-stone-500 group-hover:to-stone-600" 
+    color: "", 
+    hoverColor: "" 
   },
 ];
 
 export const FeaturesSection: FC = () => (
-  <section className="relative py-24 bg-white">
-    <div className="container mx-auto px-6 lg:px-12 max-w-7xl">
+  <section id="features" className="relative py-32 bg-[#0a0a0c] border-t border-white/5 overflow-hidden">
+    {/* Background elements */}
+    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none" />
+    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[120px] pointer-events-none" />
+    
+    <div className="relative container mx-auto px-6 lg:px-12 max-w-7xl">
       {/* Section Header */}
-      <div className="mb-20">
-        <div className="flex items-center gap-3 text-sm text-stone-600 tracking-wide mb-6">
-          <div className="w-8 h-px bg-stone-400"></div>
-          <span className="uppercase">Features</span>
+      <div className="mb-24 max-w-3xl">
+        <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-8">
+          <div className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+          <span className="uppercase tracking-[0.15em] text-xs font-semibold text-white/60">Features</span>
         </div>
         
-        <div className="grid lg:grid-cols-2 gap-12 items-end">
-          <div>
-            <h2 className="text-5xl lg:text-6xl font-light text-stone-900 leading-tight mb-6">
-              We use best<br />
-              <span className="font-serif italic text-stone-700">materials</span>!
-            </h2>
-          </div>
-          <div>
-            <p className="text-lg text-stone-600 leading-relaxed">
-              Working with verified tools and technologies. Everything you need to create, 
-              collaborate, and share your ideas with precision and elegance.
-            </p>
-          </div>
-        </div>
+        <h2 className="text-4xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tighter mb-8">
+          Built for teams that<br />
+          <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">move fast</span>.
+        </h2>
+        
+        <p className="text-xl text-white/40 leading-relaxed font-light">
+          Everything you need to create, collaborate, and share your ideas with precision. A complete toolset designed for modern workflows.
+        </p>
       </div>
 
       {/* Features Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {FEATURES_DATA.map((feature) => (
           <FeatureCard key={feature.title} {...feature} />
         ))}
       </div>
 
       {/* Bottom CTA Section */}
-      <div className="mt-20 pt-16 border-t border-stone-200">
-        <div className="bg-stone-900 rounded-3xl p-12 lg:p-16 text-white relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full filter blur-3xl"></div>
+      <div className="mt-32 relative hidden lg:block">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-[2.5rem] blur-xl opacity-20" />
+        <div className="relative bg-[#141418] border border-white/10 rounded-[2.5rem] p-12 lg:p-16 overflow-hidden">
+          {/* Decorative shapes inside CTA */}
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-violet-500/10 to-transparent rounded-full blur-3xl" />
           
-          <div className="relative grid lg:grid-cols-2 gap-8 items-center">
+          <div className="relative grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h3 className="text-3xl lg:text-4xl font-light mb-4">
-                Ready to start<br />creating?
+              <h3 className="text-4xl lg:text-5xl font-bold tracking-tighter text-white mb-6 leading-tight">
+                Ready to transform<br />
+                how you <span className="text-violet-400">collaborate?</span>
               </h3>
-              <p className="text-stone-300 text-lg">
-                Join thousands of teams already using our platform.
+              <p className="text-white/40 text-lg mb-0">
+                Join thousands of teams already building the future on our platform.
               </p>
             </div>
+            
             <div className="flex justify-start lg:justify-end">
-              <Link href={"/canvas"}>              
-              <button className="h-14 px-12 bg-white text-stone-900 rounded-full font-medium tracking-wide hover:bg-stone-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                Get Started
-              </button>
+              <Link href={"/signup"}>
+                <Button className="h-16 px-12 bg-white text-black hover:bg-white/90 rounded-2xl font-bold tracking-wide shadow-xl shadow-white/10 transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-3">
+                  Start creating for free
+                  <FiArrowRight className="w-5 h-5" />
+                </Button>
               </Link>
             </div>
           </div>
